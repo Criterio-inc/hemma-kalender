@@ -113,6 +113,24 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        snowfall: {
+          "0%": { transform: "translateY(-10px) rotate(0deg)", opacity: "1" },
+          "100%": { transform: "translateY(100vh) rotate(360deg)", opacity: "0.3" },
+        },
+        "leaf-fall": {
+          "0%": { transform: "translateY(-10px) rotate(0deg) translateX(0)", opacity: "1" },
+          "50%": { transform: "translateY(50vh) rotate(180deg) translateX(20px)" },
+          "100%": { transform: "translateY(100vh) rotate(360deg) translateX(-10px)", opacity: "0.3" },
+        },
+        "float-up": {
+          "0%": { transform: "translateY(0) scale(1)", opacity: "0.8" },
+          "50%": { transform: "translateY(-20px) scale(1.1)", opacity: "1" },
+          "100%": { transform: "translateY(0) scale(1)", opacity: "0.8" },
+        },
+        sparkle: {
+          "0%, 100%": { opacity: "0.3", transform: "scale(0.8)" },
+          "50%": { opacity: "1", transform: "scale(1.2)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -122,6 +140,10 @@ export default {
         "scale-in": "scale-in 0.3s ease-out",
         "slide-in-right": "slide-in-right 0.3s ease-out",
         shimmer: "shimmer 2s linear infinite",
+        snowfall: "snowfall 10s linear infinite",
+        "leaf-fall": "leaf-fall 12s ease-in-out infinite",
+        "float-up": "float-up 4s ease-in-out infinite",
+        sparkle: "sparkle 2s ease-in-out infinite",
       },
     },
   },

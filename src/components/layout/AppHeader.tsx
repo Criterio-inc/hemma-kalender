@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { HouseholdSession, logout } from "@/lib/auth";
 import { useNotifications, useUnreadNotificationCount, useMarkNotificationRead } from "@/hooks/useNotifications";
+import { useSeasonalTheme, getSeasonName } from "@/contexts/SeasonalThemeContext";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ interface AppHeaderProps {
 
 const AppHeader = ({ session, onAddEvent }: AppHeaderProps) => {
   const navigate = useNavigate();
+  const { month } = useSeasonalTheme();
   const { data: notifications = [] } = useNotifications(session.householdCode);
   const { data: unreadCount = 0 } = useUnreadNotificationCount(session.householdCode);
   const markRead = useMarkNotificationRead();
@@ -65,7 +67,7 @@ const AppHeader = ({ session, onAddEvent }: AppHeaderProps) => {
                   Familjekalendern
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  {session.householdName}
+                  {session.householdName} • {getSeasonName(month)}
                 </p>
               </div>
             </button>

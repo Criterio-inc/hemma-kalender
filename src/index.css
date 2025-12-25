@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Warm, welcoming family palette */
+    /* Default warm, welcoming family palette */
     --background: 210 40% 98%;
     --foreground: 220 25% 20%;
 
@@ -70,6 +70,227 @@
     /* Warning color */
     --warning: 40 95% 55%;
     --warning-foreground: 0 0% 100%;
+
+    /* Seasonal decoration */
+    --seasonal-decoration: none;
+  }
+
+  /* ===== SEASONAL THEMES ===== */
+
+  /* January - Vintervit (Winter White) */
+  .season-vintervit {
+    --background: 200 30% 97%;
+    --foreground: 210 30% 20%;
+    --primary: 200 60% 70%;
+    --primary-foreground: 210 30% 15%;
+    --secondary: 200 20% 95%;
+    --secondary-foreground: 210 25% 30%;
+    --accent: 195 50% 75%;
+    --accent-foreground: 200 40% 15%;
+    --muted: 200 20% 92%;
+    --muted-foreground: 210 15% 45%;
+    --card: 0 0% 100%;
+    --border: 200 20% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(200, 60%, 70%) 0%, hsl(210, 50%, 75%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(200, 30%, 97%) 0%, hsl(210, 40%, 95%) 100%);
+  }
+
+  /* February - Vintersport (Winter Sports) */
+  .season-vintersport {
+    --background: 210 25% 97%;
+    --foreground: 210 30% 18%;
+    --primary: 210 30% 85%;
+    --primary-foreground: 210 40% 15%;
+    --secondary: 0 65% 65%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 175 55% 55%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 210 20% 92%;
+    --muted-foreground: 210 15% 45%;
+    --card: 0 0% 100%;
+    --border: 210 20% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(210, 30%, 85%) 0%, hsl(175, 55%, 55%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(210, 25%, 97%) 0%, hsl(220, 30%, 94%) 100%);
+  }
+
+  /* March - Tidig Vår (Early Spring) */
+  .season-tidig-var {
+    --background: 100 30% 97%;
+    --foreground: 120 25% 20%;
+    --primary: 120 35% 75%;
+    --primary-foreground: 120 30% 15%;
+    --secondary: 120 25% 88%;
+    --secondary-foreground: 120 25% 25%;
+    --accent: 120 40% 55%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 100 20% 93%;
+    --muted-foreground: 120 15% 45%;
+    --card: 0 0% 100%;
+    --border: 100 20% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(100, 35%, 75%) 0%, hsl(120, 40%, 65%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(100, 30%, 97%) 0%, hsl(110, 35%, 95%) 100%);
+  }
+
+  /* April - Vårblomning (Spring Bloom) */
+  .season-varblomning {
+    --background: 40 40% 97%;
+    --foreground: 340 25% 22%;
+    --primary: 340 40% 80%;
+    --primary-foreground: 340 35% 18%;
+    --secondary: 350 50% 92%;
+    --secondary-foreground: 340 30% 25%;
+    --accent: 340 55% 75%;
+    --accent-foreground: 340 40% 15%;
+    --muted: 40 25% 93%;
+    --muted-foreground: 340 15% 45%;
+    --card: 0 0% 100%;
+    --border: 340 25% 90%;
+    --gradient-primary: linear-gradient(135deg, hsl(340, 40%, 80%) 0%, hsl(350, 50%, 75%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(40, 40%, 97%) 0%, hsl(350, 45%, 96%) 100%);
+  }
+
+  /* May - Grönska (Greenery) */
+  .season-gronska {
+    --background: 80 35% 97%;
+    --foreground: 90 30% 20%;
+    --primary: 85 45% 70%;
+    --primary-foreground: 90 35% 15%;
+    --secondary: 80 35% 85%;
+    --secondary-foreground: 90 30% 25%;
+    --accent: 45 80% 55%;
+    --accent-foreground: 45 60% 15%;
+    --muted: 80 25% 92%;
+    --muted-foreground: 90 15% 45%;
+    --card: 0 0% 100%;
+    --border: 80 20% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(85, 45%, 70%) 0%, hsl(45, 80%, 55%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(80, 35%, 97%) 0%, hsl(85, 40%, 95%) 100%);
+  }
+
+  /* June - Sommar & Midsommar */
+  .season-midsommar {
+    --background: 55 50% 97%;
+    --foreground: 210 30% 20%;
+    --primary: 200 70% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 50 75% 70%;
+    --secondary-foreground: 50 60% 18%;
+    --accent: 45 85% 65%;
+    --accent-foreground: 45 70% 15%;
+    --muted: 55 30% 93%;
+    --muted-foreground: 210 15% 45%;
+    --card: 0 0% 100%;
+    --border: 55 25% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(200, 70%, 60%) 0%, hsl(50, 75%, 65%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(55, 50%, 97%) 0%, hsl(200, 60%, 95%) 100%);
+  }
+
+  /* July - Högsommar (High Summer) */
+  .season-hogsommar {
+    --background: 40 45% 97%;
+    --foreground: 20 30% 22%;
+    --primary: 35 70% 70%;
+    --primary-foreground: 30 50% 15%;
+    --secondary: 25 75% 80%;
+    --secondary-foreground: 25 50% 22%;
+    --accent: 15 75% 55%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 40 25% 92%;
+    --muted-foreground: 25 15% 45%;
+    --card: 0 0% 100%;
+    --border: 35 25% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(35, 70%, 70%) 0%, hsl(15, 75%, 60%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(40, 45%, 97%) 0%, hsl(30, 55%, 95%) 100%);
+  }
+
+  /* August - Sensommar (Late Summer) */
+  .season-sensommar {
+    --background: 30 45% 97%;
+    --foreground: 25 30% 20%;
+    --primary: 35 80% 65%;
+    --primary-foreground: 30 60% 15%;
+    --secondary: 30 70% 75%;
+    --secondary-foreground: 30 50% 20%;
+    --accent: 30 85% 55%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 30 25% 92%;
+    --muted-foreground: 30 15% 45%;
+    --card: 0 0% 100%;
+    --border: 30 25% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(35, 80%, 65%) 0%, hsl(30, 85%, 55%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(30, 45%, 97%) 0%, hsl(35, 55%, 95%) 100%);
+  }
+
+  /* September - Höstfärger (Autumn Colors) */
+  .season-hostfarger {
+    --background: 15 35% 96%;
+    --foreground: 15 30% 20%;
+    --primary: 15 60% 70%;
+    --primary-foreground: 15 45% 15%;
+    --secondary: 10 55% 75%;
+    --secondary-foreground: 10 40% 22%;
+    --accent: 15 75% 40%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 15 22% 91%;
+    --muted-foreground: 15 15% 45%;
+    --card: 0 0% 100%;
+    --border: 15 22% 86%;
+    --gradient-primary: linear-gradient(135deg, hsl(15, 60%, 70%) 0%, hsl(15, 75%, 45%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(15, 35%, 96%) 0%, hsl(20, 40%, 94%) 100%);
+  }
+
+  /* October - Höstlov & Halloween */
+  .season-hostlov {
+    --background: 30 35% 96%;
+    --foreground: 25 35% 18%;
+    --primary: 30 80% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 25 55% 70%;
+    --secondary-foreground: 25 45% 20%;
+    --accent: 25 45% 35%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 30 20% 91%;
+    --muted-foreground: 25 15% 45%;
+    --card: 0 0% 100%;
+    --border: 30 20% 86%;
+    --gradient-primary: linear-gradient(135deg, hsl(30, 80%, 55%) 0%, hsl(25, 45%, 40%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(30, 35%, 96%) 0%, hsl(35, 40%, 93%) 100%);
+  }
+
+  /* November - Mörk Höst (Dark Autumn) */
+  .season-mork-host {
+    --background: 20 15% 95%;
+    --foreground: 20 20% 20%;
+    --primary: 20 25% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 20 18% 70%;
+    --secondary-foreground: 20 20% 22%;
+    --accent: 20 30% 32%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 20 12% 90%;
+    --muted-foreground: 20 12% 45%;
+    --card: 0 0% 100%;
+    --border: 20 12% 85%;
+    --gradient-primary: linear-gradient(135deg, hsl(20, 25%, 55%) 0%, hsl(20, 30%, 40%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(20, 15%, 95%) 0%, hsl(25, 18%, 92%) 100%);
+  }
+
+  /* December - Advent & Jul (Christmas) */
+  .season-jul {
+    --background: 280 20% 97%;
+    --foreground: 0 25% 18%;
+    --primary: 0 65% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 140 50% 35%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 45 90% 50%;
+    --accent-foreground: 45 70% 15%;
+    --muted: 280 15% 93%;
+    --muted-foreground: 0 12% 45%;
+    --card: 0 0% 100%;
+    --border: 280 15% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(0, 65%, 45%) 0%, hsl(140, 50%, 35%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(280, 20%, 97%) 0%, hsl(0, 25%, 96%) 100%);
   }
 
   .dark {
