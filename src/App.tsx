@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Calendar from "./pages/Calendar";
 import Todos from "./pages/Todos";
+import Recipes from "./pages/Recipes";
+import RecipeDetail from "./pages/RecipeDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +22,8 @@ const App = () => (
           <Route path="/" element={<Login />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/todos" element={<Todos />} />
+          <Route path="/recipes" element={<Recipes />} />
+          <Route path="/recipe/:id" element={<RecipeDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

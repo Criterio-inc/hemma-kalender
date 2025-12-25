@@ -47,6 +47,7 @@ import { Event, useUpdateEvent, useDeleteEvent } from "@/hooks/useEvents";
 import { useTimelinePhases } from "@/hooks/useTimeline";
 import TimelineView from "./TimelineView";
 import EventTodoList from "@/components/todos/EventTodoList";
+import EventRecipeList from "@/components/recipes/EventRecipeList";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -213,7 +214,7 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
                   <ListTodo className="w-3.5 h-3.5 mr-1" />
                   Planering
                 </TabsTrigger>
-                <TabsTrigger value="recipes" className="text-xs hidden md:flex" disabled>
+                <TabsTrigger value="recipes" className="text-xs hidden md:flex">
                   <BookOpen className="w-3.5 h-3.5 mr-1" />
                   Recept
                 </TabsTrigger>
@@ -254,9 +255,10 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
               </TabsContent>
 
               <TabsContent value="recipes" className="mt-4">
-                <div className="text-center py-8 text-muted-foreground">
-                  Kommer snart...
-                </div>
+                <EventRecipeList
+                  eventId={event.id}
+                  householdCode={event.household_code}
+                />
               </TabsContent>
 
               <TabsContent value="images" className="mt-4">
