@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Todo, TodoInsert, TodoUpdate, useCreateTodo, useUpdateTodo } from "@/hooks/useTodos";
 import { useEvents, Event } from "@/hooks/useEvents";
 import { useTimelinePhases } from "@/hooks/useTimeline";
+import { useCreateNotification } from "@/hooks/useCreateNotification";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { sv } from "date-fns/locale";
@@ -60,9 +62,11 @@ const TodoForm = ({ isOpen, onClose, householdCode, todo, defaultEventId }: Todo
   const [category, setCategory] = useState("general");
   const [eventId, setEventId] = useState<string>("none");
   const [phaseId, setPhaseId] = useState<string>("none");
+  const [remindOnDue, setRemindOnDue] = useState(false);
 
   const createTodo = useCreateTodo();
   const updateTodo = useUpdateTodo();
+  const createNotification = useCreateNotification();
   
   // Get events for dropdown - use a far future date to get all events
   const { data: events = [] } = useEvents(householdCode, new Date(2099, 0, 1));
@@ -81,6 +85,7 @@ const TodoForm = ({ isOpen, onClose, householdCode, todo, defaultEventId }: Todo
       setCategory(todo.category || "general");
       setEventId(todo.event_id || "none");
       setPhaseId(todo.timeline_phase_id || "none");
+      setRemindOnDue(false);
     } else {
       setTitle("");
       setDescription("");
@@ -89,6 +94,7 @@ const TodoForm = ({ isOpen, onClose, householdCode, todo, defaultEventId }: Todo
       setCategory("general");
       setEventId(defaultEventId || "none");
       setPhaseId("none");
+      setRemindOnDue(false);
     }
   }, [todo, defaultEventId, isOpen]);
 
@@ -126,7 +132,20 @@ const TodoForm = ({ isOpen, onClose, householdCode, todo, defaultEventId }: Todo
           timeline_phase_id: phaseId !== "none" ? phaseId : null,
         };
 
-        await createTodo.mutateAsync(newTodo);
+        const createdTodo = await createTodo.mutateAsync(newTodo);
+        
+        // Create reminder notification if enabled and has due date
+        if (remindOnDue && dueDate) {
+          await createNotification.mutateAsync({
+            household_code: householdCode,
+            todo_id: createdTodo.id,
+            event_id: eventId !== "none" ? eventId : null,
+            notification_type: "todo_due",
+            message: `Uppgift förfaller: ${title.trim()}`,
+            scheduled_for: dueDate.toISOString(),
+          });
+        }
+        
         toast.success("Uppgift skapad!");
       }
 
@@ -197,6 +216,21 @@ const TodoForm = ({ isOpen, onClose, householdCode, todo, defaultEventId }: Todo
               </PopoverContent>
             </Popover>
           </div>
+
+          {/* Remind on due date - only show when creating new todo with due date */}
+          {!todo && dueDate && (
+            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+              <Checkbox
+                id="remindOnDue"
+                checked={remindOnDue}
+                onCheckedChange={(checked) => setRemindOnDue(!!checked)}
+              />
+              <Label htmlFor="remindOnDue" className="font-normal cursor-pointer flex items-center gap-2">
+                <Bell className="w-4 h-4 text-muted-foreground" />
+                Påminn mig på förfallodatum
+              </Label>
+            </div>
+          )}
 
           {/* Priority and Category */}
           <div className="grid grid-cols-2 gap-4">

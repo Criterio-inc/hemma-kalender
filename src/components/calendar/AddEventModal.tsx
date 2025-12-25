@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format, differenceInWeeks } from "date-fns";
+import { format, differenceInWeeks, subHours, subDays, subWeeks } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Calendar as CalendarIcon, Sparkles, Plus, Trash2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,8 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCreateEvent } from "@/hooks/useEvents";
 import { useCreateTimelinePhases } from "@/hooks/useTimeline";
+import { useCreateNotification } from "@/hooks/useCreateNotification";
+import ReminderSection, { Reminder } from "@/components/notifications/ReminderSection";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -97,8 +99,12 @@ const AddEventModal = ({
   const [hasGuestList, setHasGuestList] = useState(false);
   const [timelinePhases, setTimelinePhases] = useState<TimelinePhaseInput[]>(defaultTimelinePhases);
 
+  // Reminders
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+
   const createEvent = useCreateEvent();
   const createTimelinePhases = useCreateTimelinePhases();
+  const createNotification = useCreateNotification();
 
   const addTimelinePhase = () => {
     const newPhase: TimelinePhaseInput = {
@@ -183,6 +189,36 @@ const AddEventModal = ({
         }
       }
 
+      // Create reminders as notifications
+      if (reminders.length > 0) {
+        for (const reminder of reminders) {
+          const timeBefore = parseInt(reminder.timeBefore);
+          let scheduledFor: Date;
+          
+          switch (reminder.timeUnit) {
+            case "hours":
+              scheduledFor = subHours(startDate, timeBefore);
+              break;
+            case "weeks":
+              scheduledFor = subWeeks(startDate, timeBefore);
+              break;
+            default:
+              scheduledFor = subDays(startDate, timeBefore);
+          }
+
+          await createNotification.mutateAsync({
+            household_code: householdCode,
+            event_id: event.id,
+            notification_type: "event_reminder",
+            message: `Påminnelse: ${title.trim()} ${reminder.timeBefore} ${
+              reminder.timeUnit === "hours" ? "timmar" : 
+              reminder.timeUnit === "weeks" ? "veckor" : "dagar"
+            } kvar`,
+            scheduled_for: scheduledFor.toISOString(),
+          });
+        }
+      }
+
       toast.success("Händelse skapad!");
       resetForm();
       onClose();
@@ -206,6 +242,7 @@ const AddEventModal = ({
     setHasBudget(false);
     setHasGuestList(false);
     setTimelinePhases(defaultTimelinePhases);
+    setReminders([]);
   };
 
   const handleClose = () => {
@@ -502,6 +539,9 @@ const AddEventModal = ({
               )}
             </div>
           )}
+
+          {/* Reminders */}
+          <ReminderSection reminders={reminders} onRemindersChange={setReminders} />
 
           {/* Submit button */}
           <div className="flex gap-3 pt-2">
