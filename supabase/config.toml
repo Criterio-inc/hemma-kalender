@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.ai-notes-search]
 verify_jwt = false
+
+[functions.ai-import-suggestions]
+verify_jwt = false

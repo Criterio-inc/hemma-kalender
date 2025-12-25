@@ -16,6 +16,7 @@ import {
   Link2,
   DollarSign,
   Users,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +53,7 @@ import { useTimelinePhases } from "@/hooks/useTimeline";
 import { useSeasonalTheme } from "@/contexts/SeasonalThemeContext";
 import { EventCategory, getEventTheme, hasSpecialTheme } from "@/themes/eventThemes";
 import EventDecorations from "@/components/events/EventDecorations";
+import ImportFromPreviousModal from "@/components/events/ImportFromPreviousModal";
 import TimelineView from "./TimelineView";
 import EventTodoList from "@/components/todos/EventTodoList";
 import EventRecipeList from "@/components/recipes/EventRecipeList";
@@ -113,6 +115,7 @@ const categoryColors: Record<string, string> = {
 const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
   // Theme context for event theme override
@@ -154,6 +157,9 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
   const eventColor = event.color || categoryColors[event.event_category || "custom"];
   const categoryLabel =
     eventCategories.find((c) => c.value === event.event_category)?.label || "Övrigt";
+  
+  // Check if this is a recurring/category event that can import from previous years
+  const canImportFromPrevious = isMajorEvent && event.event_category && event.event_category !== "custom";
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -279,6 +285,8 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
                   categoryLabel={categoryLabel}
                   onEdit={() => setIsEditing(true)}
                   onDelete={() => setIsDeleteDialogOpen(true)}
+                  onImport={() => setIsImportModalOpen(true)}
+                  canImport={canImportFromPrevious}
                 />
               </TabsContent>
 
@@ -437,6 +445,14 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Import from previous modal */}
+      <ImportFromPreviousModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        targetEvent={event}
+        householdCode={event.household_code}
+      />
     </>
   );
 };
@@ -448,12 +464,16 @@ const OverviewContent = ({
   categoryLabel,
   onEdit,
   onDelete,
+  onImport,
+  canImport,
 }: {
   event: Event;
   eventColor: string;
   categoryLabel: string;
   onEdit: () => void;
   onDelete: () => void;
+  onImport?: () => void;
+  canImport?: boolean;
 }) => (
   <div className="space-y-4">
     {/* Date and time */}
@@ -515,19 +535,27 @@ const OverviewContent = ({
     )}
 
     {/* Actions */}
-    <div className="flex gap-3 pt-2">
-      <Button
-        variant="outline"
-        onClick={onDelete}
-        className="flex-1 text-destructive hover:text-destructive"
-      >
-        <Trash2 className="w-4 h-4 mr-2" />
-        Ta bort
-      </Button>
-      <Button variant="hero" onClick={onEdit} className="flex-1">
-        <Edit2 className="w-4 h-4 mr-2" />
-        Redigera
-      </Button>
+    <div className="flex flex-col gap-2 pt-2">
+      {canImport && onImport && (
+        <Button variant="outline" onClick={onImport} className="w-full">
+          <Download className="w-4 h-4 mr-2" />
+          Importera från tidigare år
+        </Button>
+      )}
+      <div className="flex gap-3">
+        <Button
+          variant="outline"
+          onClick={onDelete}
+          className="flex-1 text-destructive hover:text-destructive"
+        >
+          <Trash2 className="w-4 h-4 mr-2" />
+          Ta bort
+        </Button>
+        <Button variant="hero" onClick={onEdit} className="flex-1">
+          <Edit2 className="w-4 h-4 mr-2" />
+          Redigera
+        </Button>
+      </div>
     </div>
   </div>
 );
