@@ -14,6 +14,8 @@ import ShoppingLists from "./pages/ShoppingLists";
 import MealPlan from "./pages/MealPlan";
 import Events from "./pages/Events";
 import Menu from "./pages/Menu";
+import SharedEvent from "./pages/SharedEvent";
+import SharedRecipe from "./pages/SharedRecipe";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ const App = () => (
             <Route path="/shopping" element={<ShoppingLists />} />
             <Route path="/meal-plan" element={<MealPlan />} />
             <Route path="/menu" element={<Menu />} />
+            <Route path="/shared/:token" element={<SharedEvent />} />
+            <Route path="/shared/recipe/:token" element={<SharedRecipe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

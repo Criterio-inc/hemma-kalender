@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action_type: string
+          actor_name: string | null
+          created_at: string
+          entity_id: string | null
+          entity_title: string | null
+          entity_type: string
+          event_id: string | null
+          household_code: string
+          id: string
+        }
+        Insert: {
+          action_type: string
+          actor_name?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_title?: string | null
+          entity_type: string
+          event_id?: string | null
+          household_code: string
+          id?: string
+        }
+        Update: {
+          action_type?: string
+          actor_name?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_title?: string | null
+          entity_type?: string
+          event_id?: string | null
+          household_code?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_log_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_interactions: {
         Row: {
           created_at: string
@@ -670,6 +714,79 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      shared_events: {
+        Row: {
+          access_level: string
+          created_at: string
+          created_by: string | null
+          event_id: string
+          expires_at: string | null
+          id: string
+          recipient_email: string | null
+          share_token: string
+        }
+        Insert: {
+          access_level?: string
+          created_at?: string
+          created_by?: string | null
+          event_id: string
+          expires_at?: string | null
+          id?: string
+          recipient_email?: string | null
+          share_token: string
+        }
+        Update: {
+          access_level?: string
+          created_at?: string
+          created_by?: string | null
+          event_id?: string
+          expires_at?: string | null
+          id?: string
+          recipient_email?: string | null
+          share_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_events_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_recipes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          recipe_id: string
+          share_token: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          recipe_id: string
+          share_token: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          recipe_id?: string
+          share_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_recipes_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shopping_list_items: {
         Row: {

@@ -17,6 +17,7 @@ import {
   DollarSign,
   Users,
   Download,
+  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +55,7 @@ import { useSeasonalTheme } from "@/contexts/SeasonalThemeContext";
 import { EventCategory, getEventTheme, hasSpecialTheme } from "@/themes/eventThemes";
 import EventDecorations from "@/components/events/EventDecorations";
 import ImportFromPreviousModal from "@/components/events/ImportFromPreviousModal";
+import ShareEventModal from "@/components/sharing/ShareEventModal";
 import TimelineView from "./TimelineView";
 import EventTodoList from "@/components/todos/EventTodoList";
 import EventRecipeList from "@/components/recipes/EventRecipeList";
@@ -116,6 +118,7 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
   // Theme context for event theme override
@@ -453,6 +456,14 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
         targetEvent={event}
         householdCode={event.household_code}
       />
+
+      {/* Share event modal */}
+      <ShareEventModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        eventId={event.id}
+        eventTitle={event.title}
+      />
     </>
   );
 };
@@ -466,6 +477,7 @@ const OverviewContent = ({
   onDelete,
   onImport,
   canImport,
+  onShare,
 }: {
   event: Event;
   eventColor: string;
@@ -474,6 +486,7 @@ const OverviewContent = ({
   onDelete: () => void;
   onImport?: () => void;
   canImport?: boolean;
+  onShare?: () => void;
 }) => (
   <div className="space-y-4">
     {/* Date and time */}
