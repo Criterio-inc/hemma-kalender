@@ -102,3 +102,11 @@ export const register = async (
 export const logout = (): void => {
   clearSession();
 };
+
+export const updateHouseholdName = (name: string): void => {
+  const session = getSession();
+  if (session) {
+    session.householdName = name;
+    setSession(session);
+  }
+};

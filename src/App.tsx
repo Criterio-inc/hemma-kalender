@@ -17,6 +17,7 @@ import Menu from "./pages/Menu";
 import SharedEvent from "./pages/SharedEvent";
 import SharedRecipe from "./pages/SharedRecipe";
 import Notifications from "./pages/Notifications";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/shared/:token" element={<SharedEvent />} />
             <Route path="/shared/recipe/:token" element={<SharedRecipe />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
