@@ -187,6 +187,101 @@ export type Database = {
         }
         Relationships: []
       }
+      images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          event_id: string | null
+          household_code: string
+          id: string
+          recipe_id: string | null
+          sort_order: number | null
+          tags: string[] | null
+          uploaded_by: string | null
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          event_id?: string | null
+          household_code: string
+          id?: string
+          recipe_id?: string | null
+          sort_order?: number | null
+          tags?: string[] | null
+          uploaded_by?: string | null
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          event_id?: string | null
+          household_code?: string
+          id?: string
+          recipe_id?: string | null
+          sort_order?: number | null
+          tags?: string[] | null
+          uploaded_by?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "images_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "images_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      links: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          event_id: string | null
+          household_code: string
+          id: string
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          event_id?: string | null
+          household_code: string
+          id?: string
+          title: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          event_id?: string | null
+          household_code?: string
+          id?: string
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "links_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           content: string
