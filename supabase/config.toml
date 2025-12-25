@@ -1,1 +1,13 @@
 project_id = "magrdzhrzfqmimtsrttj"
+
+[functions.ai-recipe-search]
+verify_jwt = false
+
+[functions.ai-categorize]
+verify_jwt = false
+
+[functions.ai-shopping-list]
+verify_jwt = false
+
+[functions.ai-notes-search]
+verify_jwt = false

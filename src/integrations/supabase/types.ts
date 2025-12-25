@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_interactions: {
+        Row: {
+          created_at: string
+          household_code: string
+          id: string
+          interaction_type: string
+          query: string | null
+          response: Json | null
+        }
+        Insert: {
+          created_at?: string
+          household_code: string
+          id?: string
+          interaction_type?: string
+          query?: string | null
+          response?: Json | null
+        }
+        Update: {
+          created_at?: string
+          household_code?: string
+          id?: string
+          interaction_type?: string
+          query?: string | null
+          response?: Json | null
+        }
+        Relationships: []
+      }
       budget_items: {
         Row: {
           actual_cost: number | null
