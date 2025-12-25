@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
-import { Plus, Clock, Calendar as CalendarIcon } from "lucide-react";
+import { Plus, Clock, Calendar as CalendarIcon, ChevronRight } from "lucide-react";
 import { Event } from "@/hooks/useEvents";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,16 +32,16 @@ const eventCategoryLabels: Record<string, string> = {
   custom: "Övrigt",
 };
 
-const eventColors: Record<string, string> = {
-  birthday: "bg-pink-400",
-  christmas: "bg-red-500",
-  wedding: "bg-purple-400",
-  easter: "bg-yellow-400",
-  midsummer: "bg-green-400",
-  new_year: "bg-blue-400",
-  graduation: "bg-indigo-400",
-  anniversary: "bg-rose-400",
-  custom: "bg-primary",
+const categoryColors: Record<string, string> = {
+  birthday: "#ec4899",
+  christmas: "#ef4444",
+  wedding: "#a855f7",
+  easter: "#eab308",
+  midsummer: "#22c55e",
+  new_year: "#3b82f6",
+  graduation: "#6366f1",
+  anniversary: "#f43f5e",
+  custom: "#3b82f6",
 };
 
 const DayDetailModal = ({
@@ -80,50 +80,44 @@ const DayDetailModal = ({
             </div>
           ) : (
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {events.map((event) => (
-                <button
-                  key={event.id}
-                  onClick={() => onEventClick(event)}
-                  className="w-full text-left p-3 rounded-xl border border-border hover:bg-muted/50 transition-colors group"
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={cn(
-                        "w-3 h-3 rounded-full mt-1.5 flex-shrink-0",
-                        event.color
-                          ? ""
-                          : eventColors[event.event_category || "custom"] || "bg-primary"
-                      )}
-                      style={
-                        event.color ? { backgroundColor: event.color } : undefined
-                      }
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {event.title}
-                      </h4>
-                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                        {!event.all_day && (
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            {format(new Date(event.start_date), "HH:mm")}
+              {events.map((event) => {
+                const eventColor =
+                  event.color || categoryColors[event.event_category || "custom"];
+                return (
+                  <button
+                    key={event.id}
+                    onClick={() => onEventClick(event)}
+                    className="w-full text-left p-3 rounded-xl border border-border hover:bg-muted/50 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: eventColor }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                          {event.title}
+                        </h4>
+                        <div className="flex items-center gap-2 mt-0.5 text-sm text-muted-foreground">
+                          {!event.all_day ? (
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5" />
+                              {format(new Date(event.start_date), "HH:mm")}
+                            </span>
+                          ) : (
+                            <span>Heldag</span>
+                          )}
+                          <span className="text-muted-foreground/50">•</span>
+                          <span>
+                            {eventCategoryLabels[event.event_category || "custom"]}
                           </span>
-                        )}
-                        {event.all_day && <span>Heldag</span>}
-                        <span className="text-muted-foreground/50">•</span>
-                        <span>
-                          {eventCategoryLabels[event.event_category || "custom"] || "Övrigt"}
-                        </span>
+                        </div>
                       </div>
-                      {event.description && (
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                          {event.description}
-                        </p>
-                      )}
+                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           )}
 

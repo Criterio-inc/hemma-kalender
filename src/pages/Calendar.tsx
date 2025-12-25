@@ -16,6 +16,7 @@ import { useEvents, useEventsForDate, Event } from "@/hooks/useEvents";
 import MonthGrid from "@/components/calendar/MonthGrid";
 import DayDetailModal from "@/components/calendar/DayDetailModal";
 import AddEventModal from "@/components/calendar/AddEventModal";
+import EventDetailModal from "@/components/calendar/EventDetailModal";
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
   const [addEventDate, setAddEventDate] = useState<Date>(new Date());
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     const currentSession = getSession();
@@ -74,8 +76,8 @@ const Calendar = () => {
   };
 
   const handleEventClick = (event: Event) => {
-    // For now, just close the modal. Later we can add event detail view
-    console.log("Event clicked:", event);
+    setSelectedDate(null);
+    setSelectedEvent(event);
   };
 
   if (!session) {
@@ -200,6 +202,15 @@ const Calendar = () => {
         selectedDate={addEventDate}
         householdCode={session.householdCode}
       />
+
+      {/* Event Detail Modal */}
+      {selectedEvent && (
+        <EventDetailModal
+          isOpen={!!selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          event={selectedEvent}
+        />
+      )}
     </div>
   );
 };
