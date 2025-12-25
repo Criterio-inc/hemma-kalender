@@ -10,6 +10,7 @@ interface CalendarCellProps {
   isWeekend: boolean;
   events: Event[];
   onClick: () => void;
+  onEventClick?: (event: Event) => void;
 }
 
 const eventColors: Record<string, string> = {
@@ -31,6 +32,7 @@ const CalendarCell = ({
   isWeekend,
   events,
   onClick,
+  onEventClick,
 }: CalendarCellProps) => {
   const dayEvents = events.slice(0, 3);
   const moreCount = events.length - 3;
@@ -64,10 +66,14 @@ const CalendarCell = ({
       {/* Event dots */}
       <div className="flex flex-wrap gap-1 mt-1">
         {dayEvents.map((event) => (
-          <div
+          <button
             key={event.id}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEventClick?.(event);
+            }}
             className={cn(
-              "w-2 h-2 rounded-full",
+              "w-2 h-2 rounded-full hover:scale-150 transition-transform cursor-pointer",
               event.color ? "" : eventColors[event.event_category || "custom"] || "bg-primary"
             )}
             style={event.color ? { backgroundColor: event.color } : undefined}
@@ -84,10 +90,14 @@ const CalendarCell = ({
       {/* Event titles on larger screens */}
       <div className="hidden md:flex flex-col gap-0.5 mt-1 overflow-hidden flex-1">
         {dayEvents.slice(0, 2).map((event) => (
-          <div
+          <button
             key={event.id}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEventClick?.(event);
+            }}
             className={cn(
-              "text-xs px-1.5 py-0.5 rounded truncate font-medium",
+              "text-xs px-1.5 py-0.5 rounded truncate font-medium text-left hover:opacity-80 transition-opacity cursor-pointer",
               event.color ? "text-foreground" : "text-primary-foreground"
             )}
             style={{
@@ -96,7 +106,7 @@ const CalendarCell = ({
             }}
           >
             {event.title}
-          </div>
+          </button>
         ))}
         {events.length > 2 && (
           <span className="text-[10px] text-muted-foreground font-medium px-1">

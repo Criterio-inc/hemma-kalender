@@ -286,6 +286,7 @@ const Calendar = () => {
                   currentDate={currentDate}
                   events={monthEvents}
                   onDayClick={handleDayClick}
+                  onEventClick={handleEventClick}
                 />
               )}
 

@@ -14,11 +14,12 @@ interface MonthGridProps {
   currentDate: Date;
   events: Event[];
   onDayClick: (date: Date) => void;
+  onEventClick?: (event: Event) => void;
 }
 
 const weekDays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"];
 
-const MonthGrid = ({ currentDate, events, onDayClick }: MonthGridProps) => {
+const MonthGrid = ({ currentDate, events, onDayClick, onEventClick }: MonthGridProps) => {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -85,6 +86,7 @@ const MonthGrid = ({ currentDate, events, onDayClick }: MonthGridProps) => {
               isWeekend={isWeekend}
               events={dayEvents}
               onClick={() => onDayClick(day)}
+              onEventClick={onEventClick}
             />
           );
         })}
