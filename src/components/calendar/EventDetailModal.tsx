@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import {
@@ -49,6 +49,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Event, useUpdateEvent, useDeleteEvent } from "@/hooks/useEvents";
 import { useTimelinePhases } from "@/hooks/useTimeline";
+import { useSeasonalTheme } from "@/contexts/SeasonalThemeContext";
+import { EventCategory, getEventTheme, hasSpecialTheme } from "@/themes/eventThemes";
+import EventDecorations from "@/components/events/EventDecorations";
 import TimelineView from "./TimelineView";
 import EventTodoList from "@/components/todos/EventTodoList";
 import EventRecipeList from "@/components/recipes/EventRecipeList";
@@ -72,7 +75,10 @@ const eventCategories = [
   { value: "christmas", label: "Jul" },
   { value: "easter", label: "Påsk" },
   { value: "midsummer", label: "Midsommar" },
+  { value: "lucia", label: "Lucia" },
   { value: "new_year", label: "Nyår" },
+  { value: "summer_vacation", label: "Sommarlov" },
+  { value: "sportlov", label: "Sportlov" },
   { value: "wedding", label: "Bröllop" },
   { value: "graduation", label: "Examen" },
   { value: "anniversary", label: "Årsdag" },
@@ -95,7 +101,10 @@ const categoryColors: Record<string, string> = {
   wedding: "#a855f7",
   easter: "#eab308",
   midsummer: "#22c55e",
+  lucia: "#fbbf24",
   new_year: "#3b82f6",
+  summer_vacation: "#06b6d4",
+  sportlov: "#2563eb",
   graduation: "#6366f1",
   anniversary: "#f43f5e",
   custom: "#3b82f6",
@@ -105,6 +114,24 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Theme context for event theme override
+  const { setEventTheme, isEventThemeActive } = useSeasonalTheme();
+  const eventCategory = (event.event_category || "custom") as EventCategory;
+  const showEventDecorations = hasSpecialTheme(eventCategory);
+
+  // Apply event theme when modal opens
+  useEffect(() => {
+    if (isOpen && hasSpecialTheme(eventCategory)) {
+      setEventTheme(eventCategory);
+    }
+    return () => {
+      // Revert theme when modal closes
+      if (isOpen) {
+        setEventTheme(null);
+      }
+    };
+  }, [isOpen, eventCategory, setEventTheme]);
 
   // Form state
   const [title, setTitle] = useState(event.title);
@@ -194,9 +221,13 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
         <DialogContent className={cn(
-          "max-h-[90vh] overflow-y-auto",
+          "max-h-[90vh] overflow-y-auto relative",
           isMajorEvent ? "sm:max-w-2xl" : "sm:max-w-md"
         )}>
+          {/* Event theme decorations */}
+          {showEventDecorations && (
+            <EventDecorations category={eventCategory} className="opacity-30" />
+          )}
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
               {isMajorEvent ? (

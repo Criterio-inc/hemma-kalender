@@ -293,6 +293,217 @@
     --gradient-hero: linear-gradient(180deg, hsl(280, 20%, 97%) 0%, hsl(0, 25%, 96%) 100%);
   }
 
+  /* ===== EVENT THEMES ===== */
+
+  /* Christmas Event Theme */
+  .event-christmas {
+    --background: 0 0% 98%;
+    --foreground: 0 40% 15%;
+    --primary: 0 70% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 122 39% 39%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 51 100% 50%;
+    --accent-foreground: 51 80% 15%;
+    --muted: 0 15% 94%;
+    --muted-foreground: 0 20% 45%;
+    --card: 0 0% 100%;
+    --border: 0 15% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(0, 70%, 50%) 0%, hsl(122, 39%, 39%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(0, 0%, 98%) 0%, hsl(0, 30%, 96%) 100%);
+  }
+
+  /* Easter Event Theme */
+  .event-easter {
+    --background: 54 100% 98%;
+    --foreground: 45 40% 18%;
+    --primary: 45 100% 65%;
+    --primary-foreground: 45 70% 15%;
+    --secondary: 88 50% 67%;
+    --secondary-foreground: 88 40% 15%;
+    --accent: 291 47% 72%;
+    --accent-foreground: 291 40% 15%;
+    --muted: 54 40% 94%;
+    --muted-foreground: 45 20% 45%;
+    --card: 0 0% 100%;
+    --border: 54 30% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(45, 100%, 75%) 0%, hsl(88, 50%, 67%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(54, 100%, 98%) 0%, hsl(88, 45%, 96%) 100%);
+  }
+
+  /* Midsummer Event Theme */
+  .event-midsummer {
+    --background: 54 100% 98%;
+    --foreground: 199 40% 18%;
+    --primary: 199 92% 64%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 100% 69%;
+    --secondary-foreground: 45 80% 15%;
+    --accent: 122 39% 63%;
+    --accent-foreground: 122 30% 15%;
+    --muted: 54 40% 94%;
+    --muted-foreground: 199 20% 45%;
+    --card: 0 0% 100%;
+    --border: 199 30% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(199, 92%, 64%) 0%, hsl(45, 100%, 69%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(54, 100%, 98%) 0%, hsl(199, 70%, 96%) 100%);
+  }
+
+  /* Wedding Event Theme */
+  .event-wedding {
+    --background: 30 100% 99%;
+    --foreground: 340 25% 20%;
+    --primary: 340 40% 80%;
+    --primary-foreground: 340 35% 18%;
+    --secondary: 0 100% 94%;
+    --secondary-foreground: 340 30% 25%;
+    --accent: 51 100% 50%;
+    --accent-foreground: 51 80% 15%;
+    --muted: 30 40% 95%;
+    --muted-foreground: 340 15% 50%;
+    --card: 0 0% 100%;
+    --border: 340 25% 90%;
+    --gradient-primary: linear-gradient(135deg, hsl(340, 40%, 80%) 0%, hsl(51, 100%, 60%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(30, 100%, 99%) 0%, hsl(340, 50%, 97%) 100%);
+  }
+
+  /* Birthday Event Theme */
+  .event-birthday {
+    --background: 280 60% 98%;
+    --foreground: 280 30% 18%;
+    --primary: 280 100% 70%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 199 92% 64%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 51 100% 50%;
+    --accent-foreground: 51 80% 15%;
+    --muted: 280 30% 94%;
+    --muted-foreground: 280 15% 50%;
+    --card: 0 0% 100%;
+    --border: 280 25% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(340, 80%, 65%) 0%, hsl(200, 80%, 60%) 50%, hsl(120, 60%, 55%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(280, 60%, 98%) 0%, hsl(340, 60%, 96%) 50%, hsl(200, 60%, 97%) 100%);
+  }
+
+  /* Lucia Event Theme */
+  .event-lucia {
+    --background: 45 20% 12%;
+    --foreground: 0 0% 95%;
+    --primary: 51 100% 50%;
+    --primary-foreground: 51 80% 12%;
+    --secondary: 0 70% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 0 0% 15%;
+    --muted: 45 15% 18%;
+    --muted-foreground: 45 10% 65%;
+    --card: 45 15% 15%;
+    --card-foreground: 0 0% 95%;
+    --border: 45 15% 22%;
+    --gradient-primary: linear-gradient(135deg, hsl(51, 100%, 50%) 0%, hsl(0, 70%, 50%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(45, 20%, 12%) 0%, hsl(45, 25%, 8%) 100%);
+  }
+
+  /* New Year Event Theme */
+  .event-newyear {
+    --background: 232 47% 12%;
+    --foreground: 0 0% 95%;
+    --primary: 51 100% 50%;
+    --primary-foreground: 232 47% 12%;
+    --secondary: 330 81% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 232 47% 15%;
+    --muted: 232 30% 18%;
+    --muted-foreground: 232 15% 65%;
+    --card: 232 35% 15%;
+    --card-foreground: 0 0% 95%;
+    --border: 232 25% 22%;
+    --gradient-primary: linear-gradient(135deg, hsl(232, 47%, 29%) 0%, hsl(51, 100%, 50%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(232, 47%, 12%) 0%, hsl(270, 50%, 15%) 100%);
+  }
+
+  /* Summer Vacation Event Theme */
+  .event-summer {
+    --background: 54 100% 97%;
+    --foreground: 180 40% 18%;
+    --primary: 180 76% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 14 83% 63%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 54 100% 70%;
+    --accent-foreground: 54 80% 15%;
+    --muted: 54 40% 94%;
+    --muted-foreground: 180 20% 45%;
+    --card: 0 0% 100%;
+    --border: 180 30% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(180, 76%, 55%) 0%, hsl(14, 83%, 63%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(54, 100%, 97%) 0%, hsl(180, 60%, 96%) 100%);
+  }
+
+  /* Sportlov Event Theme */
+  .event-sportlov {
+    --background: 212 100% 98%;
+    --foreground: 213 50% 18%;
+    --primary: 213 71% 49%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 83% 71%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 213 50% 18%;
+    --muted: 212 40% 94%;
+    --muted-foreground: 213 25% 50%;
+    --card: 0 0% 100%;
+    --border: 212 30% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(213, 71%, 49%) 0%, hsl(0, 83%, 71%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(212, 100%, 98%) 0%, hsl(213, 60%, 96%) 100%);
+  }
+
+  /* Graduation Event Theme */
+  .event-graduation {
+    --background: 239 50% 98%;
+    --foreground: 239 40% 18%;
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 51 100% 50%;
+    --secondary-foreground: 51 80% 15%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 239 40% 18%;
+    --muted: 239 30% 94%;
+    --muted-foreground: 239 20% 50%;
+    --card: 0 0% 100%;
+    --border: 239 25% 88%;
+    --gradient-primary: linear-gradient(135deg, hsl(239, 84%, 67%) 0%, hsl(51, 100%, 50%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(239, 50%, 98%) 0%, hsl(239, 40%, 96%) 100%);
+  }
+
+  /* Anniversary Event Theme */
+  .event-anniversary {
+    --background: 350 100% 99%;
+    --foreground: 346 40% 18%;
+    --primary: 346 77% 61%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 51 100% 50%;
+    --secondary-foreground: 51 80% 15%;
+    --accent: 350 100% 94%;
+    --accent-foreground: 346 40% 18%;
+    --muted: 350 40% 95%;
+    --muted-foreground: 346 20% 50%;
+    --card: 0 0% 100%;
+    --border: 350 30% 90%;
+    --gradient-primary: linear-gradient(135deg, hsl(346, 77%, 61%) 0%, hsl(51, 100%, 60%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(350, 100%, 99%) 0%, hsl(346, 60%, 97%) 100%);
+  }
+
+  /* Custom Event Theme (minimal) */
+  .event-custom {
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --gradient-primary: linear-gradient(135deg, hsl(217, 91%, 60%) 0%, hsl(240, 70%, 60%) 100%);
+  }
+
   .dark {
     --background: 220 25% 10%;
     --foreground: 210 40% 98%;
