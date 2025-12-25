@@ -533,6 +533,63 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          event_id: string | null
+          household_code: string
+          id: string
+          message: string
+          notification_type: string
+          read: boolean | null
+          scheduled_for: string | null
+          sent: boolean | null
+          sent_at: string | null
+          todo_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_id?: string | null
+          household_code: string
+          id?: string
+          message: string
+          notification_type?: string
+          read?: boolean | null
+          scheduled_for?: string | null
+          sent?: boolean | null
+          sent_at?: string | null
+          todo_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string | null
+          household_code?: string
+          id?: string
+          message?: string
+          notification_type?: string
+          read?: boolean | null
+          scheduled_for?: string | null
+          sent?: boolean | null
+          sent_at?: string | null
+          todo_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_todo_id_fkey"
+            columns: ["todo_id"]
+            isOneToOne: false
+            referencedRelation: "todos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recipes: {
         Row: {
           category: string | null
