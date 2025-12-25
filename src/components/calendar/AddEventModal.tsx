@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, differenceInWeeks } from "date-fns";
 import { sv } from "date-fns/locale";
-import { Calendar as CalendarIcon, Sparkles } from "lucide-react";
+import { Calendar as CalendarIcon, Sparkles, Plus, Trash2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCreateEvent } from "@/hooks/useEvents";
+import { useCreateTimelinePhases } from "@/hooks/useTimeline";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +31,13 @@ interface AddEventModalProps {
   onClose: () => void;
   selectedDate: Date;
   householdCode: string;
+}
+
+interface TimelinePhaseInput {
+  id: string;
+  phase_name: string;
+  weeks_before: number;
+  description: string;
 }
 
 const eventCategories = [
@@ -54,6 +63,14 @@ const eventColors = [
   { value: "#6366f1", label: "Indigo" },
 ];
 
+const defaultTimelinePhases: TimelinePhaseInput[] = [
+  { id: "1", phase_name: "8 veckor kvar", weeks_before: 8, description: "Börja planera och sätt budget" },
+  { id: "2", phase_name: "4 veckor kvar", weeks_before: 4, description: "Bekräfta gästlista och meny" },
+  { id: "3", phase_name: "2 veckor kvar", weeks_before: 2, description: "Handla och förbered" },
+  { id: "4", phase_name: "1 vecka kvar", weeks_before: 1, description: "Sista förberedelser" },
+  { id: "5", phase_name: "Dagen innan", weeks_before: 0, description: "Städa och dekorera" },
+];
+
 const AddEventModal = ({
   isOpen,
   onClose,
@@ -71,7 +88,38 @@ const AddEventModal = ({
   const [recurring, setRecurring] = useState(false);
   const [recurringPattern, setRecurringPattern] = useState("yearly");
 
+  // Major event options
+  const [hasTimeline, setHasTimeline] = useState(true);
+  const [hasBudget, setHasBudget] = useState(false);
+  const [hasGuestList, setHasGuestList] = useState(false);
+  const [timelinePhases, setTimelinePhases] = useState<TimelinePhaseInput[]>(defaultTimelinePhases);
+
   const createEvent = useCreateEvent();
+  const createTimelinePhases = useCreateTimelinePhases();
+
+  const addTimelinePhase = () => {
+    const newPhase: TimelinePhaseInput = {
+      id: Date.now().toString(),
+      phase_name: "",
+      weeks_before: 1,
+      description: "",
+    };
+    setTimelinePhases([...timelinePhases, newPhase]);
+  };
+
+  const removeTimelinePhase = (id: string) => {
+    setTimelinePhases(timelinePhases.filter((p) => p.id !== id));
+  };
+
+  const updateTimelinePhase = (
+    id: string,
+    field: keyof TimelinePhaseInput,
+    value: string | number
+  ) => {
+    setTimelinePhases(
+      timelinePhases.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +145,7 @@ const AddEventModal = ({
     }
 
     try {
-      await createEvent.mutateAsync({
+      const event = await createEvent.mutateAsync({
         household_code: householdCode,
         title: title.trim(),
         description: description.trim() || null,
@@ -109,9 +157,29 @@ const AddEventModal = ({
         recurring,
         recurring_pattern: recurring ? recurringPattern : null,
         color: color || null,
-        theme_settings: null,
+        theme_settings: {
+          has_timeline: eventType === "major_event" && hasTimeline,
+          has_budget: eventType === "major_event" && hasBudget,
+          has_guest_list: eventType === "major_event" && hasGuestList,
+        },
         created_by: null,
       });
+
+      // Create timeline phases for major events
+      if (eventType === "major_event" && hasTimeline && timelinePhases.length > 0) {
+        const validPhases = timelinePhases.filter((p) => p.phase_name.trim());
+        if (validPhases.length > 0) {
+          await createTimelinePhases.mutateAsync(
+            validPhases.map((p, index) => ({
+              event_id: event.id,
+              phase_name: p.phase_name,
+              weeks_before: p.weeks_before,
+              description: p.description || null,
+              sort_order: index,
+            }))
+          );
+        }
+      }
 
       toast.success("Händelse skapad!");
       resetForm();
@@ -132,6 +200,10 @@ const AddEventModal = ({
     setColor("");
     setRecurring(false);
     setRecurringPattern("yearly");
+    setHasTimeline(true);
+    setHasBudget(false);
+    setHasGuestList(false);
+    setTimelinePhases(defaultTimelinePhases);
   };
 
   const handleClose = () => {
@@ -139,12 +211,18 @@ const AddEventModal = ({
     onClose();
   };
 
+  const isMajorEvent = eventType === "major_event";
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
-            <CalendarIcon className="w-5 h-5 text-primary" />
+            {isMajorEvent ? (
+              <Sparkles className="w-5 h-5 text-accent" />
+            ) : (
+              <CalendarIcon className="w-5 h-5 text-primary" />
+            )}
             Ny händelse
           </DialogTitle>
         </DialogHeader>
@@ -200,7 +278,7 @@ const AddEventModal = ({
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="T.ex. Mormors födelsedag"
+              placeholder={isMajorEvent ? "T.ex. Jul 2025" : "T.ex. Mormors födelsedag"}
             />
           </div>
 
@@ -212,7 +290,7 @@ const AddEventModal = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Lägg till detaljer..."
-              rows={3}
+              rows={2}
             />
           </div>
 
@@ -232,6 +310,118 @@ const AddEventModal = ({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Major event options */}
+          {isMajorEvent && (
+            <div className="space-y-4 p-4 bg-accent/5 rounded-xl border border-accent/20">
+              <h4 className="font-semibold text-sm flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-accent" />
+                Planeringsverktyg
+              </h4>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="hasTimeline"
+                    checked={hasTimeline}
+                    onCheckedChange={(checked) => setHasTimeline(!!checked)}
+                  />
+                  <Label htmlFor="hasTimeline" className="font-normal cursor-pointer">
+                    Tidslinje med faser
+                  </Label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="hasBudget"
+                    checked={hasBudget}
+                    onCheckedChange={(checked) => setHasBudget(!!checked)}
+                  />
+                  <Label htmlFor="hasBudget" className="font-normal cursor-pointer">
+                    Budget (kommer snart)
+                  </Label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="hasGuestList"
+                    checked={hasGuestList}
+                    onCheckedChange={(checked) => setHasGuestList(!!checked)}
+                  />
+                  <Label htmlFor="hasGuestList" className="font-normal cursor-pointer">
+                    Gästlista (kommer snart)
+                  </Label>
+                </div>
+              </div>
+
+              {/* Timeline phases */}
+              {hasTimeline && (
+                <div className="space-y-3 mt-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm">Tidslinjefaser</Label>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={addTimelinePhase}
+                      className="text-xs"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      Lägg till fas
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                    {timelinePhases.map((phase, index) => (
+                      <div
+                        key={phase.id}
+                        className="flex items-start gap-2 p-2 bg-background rounded-lg border"
+                      >
+                        <div className="flex-1 space-y-2">
+                          <Input
+                            value={phase.phase_name}
+                            onChange={(e) =>
+                              updateTimelinePhase(phase.id, "phase_name", e.target.value)
+                            }
+                            placeholder="Namn på fas"
+                            className="h-8 text-sm"
+                          />
+                          <div className="flex gap-2">
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-muted-foreground" />
+                              <Input
+                                type="number"
+                                min="0"
+                                value={phase.weeks_before}
+                                onChange={(e) =>
+                                  updateTimelinePhase(
+                                    phase.id,
+                                    "weeks_before",
+                                    parseInt(e.target.value) || 0
+                                  )
+                                }
+                                className="h-7 w-16 text-xs"
+                              />
+                              <span className="text-xs text-muted-foreground">
+                                veckor före
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeTimelinePhase(phase.id)}
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* All day toggle */}
           <div className="flex items-center justify-between">
@@ -285,29 +475,31 @@ const AddEventModal = ({
             </div>
           </div>
 
-          {/* Recurring toggle */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="recurring">Återkommande</Label>
-              <Switch
-                id="recurring"
-                checked={recurring}
-                onCheckedChange={setRecurring}
-              />
+          {/* Recurring toggle - only for simple events */}
+          {!isMajorEvent && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="recurring">Återkommande</Label>
+                <Switch
+                  id="recurring"
+                  checked={recurring}
+                  onCheckedChange={setRecurring}
+                />
+              </div>
+              {recurring && (
+                <Select value={recurringPattern} onValueChange={setRecurringPattern}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="yearly">Varje år</SelectItem>
+                    <SelectItem value="monthly">Varje månad</SelectItem>
+                    <SelectItem value="weekly">Varje vecka</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
-            {recurring && (
-              <Select value={recurringPattern} onValueChange={setRecurringPattern}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover">
-                  <SelectItem value="yearly">Varje år</SelectItem>
-                  <SelectItem value="monthly">Varje månad</SelectItem>
-                  <SelectItem value="weekly">Varje vecka</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          </div>
+          )}
 
           {/* Submit button */}
           <div className="flex gap-3 pt-2">
@@ -321,9 +513,9 @@ const AddEventModal = ({
             </Button>
             <Button
               type="submit"
-              variant="hero"
+              variant={isMajorEvent ? "warm" : "hero"}
               className="flex-1"
-              disabled={createEvent.isPending}
+              disabled={createEvent.isPending || createTimelinePhases.isPending}
             >
               {createEvent.isPending ? "Sparar..." : "Spara händelse"}
             </Button>

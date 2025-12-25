@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_timeline: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_id: string
+          id: string
+          phase_name: string
+          sort_order: number | null
+          weeks_before: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_id: string
+          id?: string
+          phase_name: string
+          sort_order?: number | null
+          weeks_before?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_id?: string
+          id?: string
+          phase_name?: string
+          sort_order?: number | null
+          weeks_before?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_timeline_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           all_day: boolean | null
@@ -24,6 +62,9 @@ export type Database = {
           end_date: string | null
           event_category: string | null
           event_type: string | null
+          has_budget: boolean | null
+          has_guest_list: boolean | null
+          has_timeline: boolean | null
           household_code: string
           id: string
           recurring: boolean | null
@@ -42,6 +83,9 @@ export type Database = {
           end_date?: string | null
           event_category?: string | null
           event_type?: string | null
+          has_budget?: boolean | null
+          has_guest_list?: boolean | null
+          has_timeline?: boolean | null
           household_code: string
           id?: string
           recurring?: boolean | null
@@ -60,6 +104,9 @@ export type Database = {
           end_date?: string | null
           event_category?: string | null
           event_type?: string | null
+          has_budget?: boolean | null
+          has_guest_list?: boolean | null
+          has_timeline?: boolean | null
           household_code?: string
           id?: string
           recurring?: boolean | null
