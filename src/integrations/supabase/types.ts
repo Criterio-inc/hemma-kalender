@@ -14,6 +14,85 @@ export type Database = {
   }
   public: {
     Tables: {
+      budget_items: {
+        Row: {
+          actual_cost: number | null
+          budget_id: string
+          category: string | null
+          created_at: string
+          description: string | null
+          estimated_cost: number | null
+          id: string
+          paid: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          actual_cost?: number | null
+          budget_id: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_cost?: number | null
+          id?: string
+          paid?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          actual_cost?: number | null
+          budget_id?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_cost?: number | null
+          id?: string
+          paid?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_items_budget_id_fkey"
+            columns: ["budget_id"]
+            isOneToOne: false
+            referencedRelation: "budgets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      budgets: {
+        Row: {
+          created_at: string
+          currency: string | null
+          event_id: string
+          id: string
+          total_budget: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          event_id: string
+          id?: string
+          total_budget?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          event_id?: string
+          id?: string
+          total_budget?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_recipes: {
         Row: {
           created_at: string
@@ -159,6 +238,56 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      guests: {
+        Row: {
+          created_at: string
+          dietary_requirements: string | null
+          email: string | null
+          event_id: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          plus_one: boolean | null
+          rsvp_status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dietary_requirements?: string | null
+          email?: string | null
+          event_id: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          plus_one?: boolean | null
+          rsvp_status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dietary_requirements?: string | null
+          email?: string | null
+          event_id?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          plus_one?: boolean | null
+          rsvp_status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guests_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       households: {
         Row: {

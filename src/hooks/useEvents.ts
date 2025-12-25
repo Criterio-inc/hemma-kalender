@@ -38,6 +38,9 @@ type EventInsert = {
   recurring_pattern?: string | null;
   color?: string | null;
   theme_settings?: unknown;
+  has_timeline?: boolean | null;
+  has_budget?: boolean | null;
+  has_guest_list?: boolean | null;
   created_by?: string | null;
 };
 

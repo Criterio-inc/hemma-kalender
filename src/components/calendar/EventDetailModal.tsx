@@ -14,6 +14,8 @@ import {
   StickyNote,
   ChevronRight,
   Link2,
+  DollarSign,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +46,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Event, useUpdateEvent, useDeleteEvent } from "@/hooks/useEvents";
 import { useTimelinePhases } from "@/hooks/useTimeline";
 import TimelineView from "./TimelineView";
@@ -52,6 +55,8 @@ import EventRecipeList from "@/components/recipes/EventRecipeList";
 import EventImageGallery from "@/components/events/EventImageGallery";
 import EventNotesList from "@/components/events/EventNotesList";
 import EventLinksList from "@/components/events/EventLinksList";
+import EventBudgetSection from "@/components/budget/EventBudgetSection";
+import EventGuestList from "@/components/guests/EventGuestList";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -246,20 +251,75 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
                 />
               </TabsContent>
 
-              <TabsContent value="planning" className="mt-4 space-y-6">
-                {event.has_timeline && (
-                  <TimelineView
-                    phases={timelinePhases}
-                    eventDate={new Date(event.start_date)}
-                  />
-                )}
+              <TabsContent value="planning" className="mt-4 space-y-4">
+                <Accordion type="multiple" defaultValue={["todos"]} className="space-y-2">
+                  {event.has_timeline && (
+                    <AccordionItem value="timeline" className="border rounded-lg px-4">
+                      <AccordionTrigger className="hover:no-underline">
+                        <span className="flex items-center gap-2">
+                          <CalendarIcon className="w-4 h-4" />
+                          Tidslinje
+                        </span>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <TimelineView
+                          phases={timelinePhases}
+                          eventDate={new Date(event.start_date)}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
 
-                {/* Todo list */}
-                <EventTodoList
-                  eventId={event.id}
-                  householdCode={event.household_code}
-                  hasTimeline={event.has_timeline || false}
-                />
+                  <AccordionItem value="todos" className="border rounded-lg px-4">
+                    <AccordionTrigger className="hover:no-underline">
+                      <span className="flex items-center gap-2">
+                        <ListTodo className="w-4 h-4" />
+                        Att göra
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <EventTodoList
+                        eventId={event.id}
+                        householdCode={event.household_code}
+                        hasTimeline={event.has_timeline || false}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {event.has_budget && (
+                    <AccordionItem value="budget" className="border rounded-lg px-4">
+                      <AccordionTrigger className="hover:no-underline">
+                        <span className="flex items-center gap-2">
+                          <DollarSign className="w-4 h-4" />
+                          Budget
+                        </span>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <EventBudgetSection
+                          eventId={event.id}
+                          hasBudget={event.has_budget || false}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+
+                  {event.has_guest_list && (
+                    <AccordionItem value="guests" className="border rounded-lg px-4">
+                      <AccordionTrigger className="hover:no-underline">
+                        <span className="flex items-center gap-2">
+                          <Users className="w-4 h-4" />
+                          Gästlista
+                        </span>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <EventGuestList
+                          eventId={event.id}
+                          hasGuestList={event.has_guest_list || false}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
+                </Accordion>
               </TabsContent>
 
               <TabsContent value="recipes" className="mt-4">

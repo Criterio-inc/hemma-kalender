@@ -157,11 +157,10 @@ const AddEventModal = ({
         recurring,
         recurring_pattern: recurring ? recurringPattern : null,
         color: color || null,
-        theme_settings: {
-          has_timeline: eventType === "major_event" && hasTimeline,
-          has_budget: eventType === "major_event" && hasBudget,
-          has_guest_list: eventType === "major_event" && hasGuestList,
-        },
+        has_timeline: eventType === "major_event" && hasTimeline,
+        has_budget: eventType === "major_event" && hasBudget,
+        has_guest_list: eventType === "major_event" && hasGuestList,
+        theme_settings: null,
         created_by: null,
       });
 
@@ -337,7 +336,7 @@ const AddEventModal = ({
                     onCheckedChange={(checked) => setHasBudget(!!checked)}
                   />
                   <Label htmlFor="hasBudget" className="font-normal cursor-pointer">
-                    Budget (kommer snart)
+                    Budget
                   </Label>
                 </div>
                 <div className="flex items-center gap-3">
@@ -347,7 +346,7 @@ const AddEventModal = ({
                     onCheckedChange={(checked) => setHasGuestList(!!checked)}
                   />
                   <Label htmlFor="hasGuestList" className="font-normal cursor-pointer">
-                    Gästlista (kommer snart)
+                    Gästlista
                   </Label>
                 </div>
               </div>
