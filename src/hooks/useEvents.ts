@@ -17,6 +17,9 @@ type Event = {
   recurring_pattern: string | null;
   color: string | null;
   theme_settings: Record<string, unknown> | null;
+  has_timeline: boolean | null;
+  has_budget: boolean | null;
+  has_guest_list: boolean | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
