@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          all_day: boolean | null
+          color: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          event_category: string | null
+          event_type: string | null
+          household_code: string
+          id: string
+          recurring: boolean | null
+          recurring_pattern: string | null
+          start_date: string
+          theme_settings: Json | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          all_day?: boolean | null
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          event_category?: string | null
+          event_type?: string | null
+          household_code: string
+          id?: string
+          recurring?: boolean | null
+          recurring_pattern?: string | null
+          start_date: string
+          theme_settings?: Json | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          all_day?: boolean | null
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          event_category?: string | null
+          event_type?: string | null
+          household_code?: string
+          id?: string
+          recurring?: boolean | null
+          recurring_pattern?: string | null
+          start_date?: string
+          theme_settings?: Json | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       households: {
         Row: {
           created_at: string
@@ -40,6 +97,172 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      notes: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string | null
+          event_id: string | null
+          household_code: string
+          id: string
+          note_type: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by?: string | null
+          event_id?: string | null
+          household_code: string
+          id?: string
+          note_type?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          event_id?: string | null
+          household_code?: string
+          id?: string
+          note_type?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recipes: {
+        Row: {
+          category: string | null
+          cook_time: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          household_code: string
+          id: string
+          image_url: string | null
+          ingredients: Json | null
+          instructions: string | null
+          prep_time: number | null
+          servings: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          cook_time?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          household_code: string
+          id?: string
+          image_url?: string | null
+          ingredients?: Json | null
+          instructions?: string | null
+          prep_time?: number | null
+          servings?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          cook_time?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          household_code?: string
+          id?: string
+          image_url?: string | null
+          ingredients?: Json | null
+          instructions?: string | null
+          prep_time?: number | null
+          servings?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      todos: {
+        Row: {
+          category: string | null
+          completed: boolean | null
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          event_id: string | null
+          household_code: string
+          id: string
+          priority: string | null
+          sort_order: number | null
+          timeline_phase_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          completed?: boolean | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          event_id?: string | null
+          household_code: string
+          id?: string
+          priority?: string | null
+          sort_order?: number | null
+          timeline_phase_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          completed?: boolean | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          event_id?: string | null
+          household_code?: string
+          id?: string
+          priority?: string | null
+          sort_order?: number | null
+          timeline_phase_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todos_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
