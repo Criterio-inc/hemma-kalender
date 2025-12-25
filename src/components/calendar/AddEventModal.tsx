@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useCreateEvent } from "@/hooks/useEvents";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface AddEventModalProps {
   isOpen: boolean;
@@ -61,6 +62,7 @@ const AddEventModal = ({
 }: AddEventModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [eventType, setEventType] = useState<"simple" | "major_event">("simple");
   const [category, setCategory] = useState("custom");
   const [allDay, setAllDay] = useState(true);
   const [startTime, setStartTime] = useState("09:00");
@@ -99,7 +101,7 @@ const AddEventModal = ({
         household_code: householdCode,
         title: title.trim(),
         description: description.trim() || null,
-        event_type: "simple",
+        event_type: eventType,
         event_category: category,
         start_date: startDate.toISOString(),
         end_date: endDate?.toISOString() || null,
@@ -122,6 +124,7 @@ const AddEventModal = ({
   const resetForm = () => {
     setTitle("");
     setDescription("");
+    setEventType("simple");
     setCategory("custom");
     setAllDay(true);
     setStartTime("09:00");
@@ -155,6 +158,41 @@ const AddEventModal = ({
             </p>
           </div>
 
+          {/* Event type toggle */}
+          <div className="space-y-2">
+            <Label>Typ av händelse</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setEventType("simple")}
+                className={cn(
+                  "p-3 rounded-xl border-2 transition-all text-left",
+                  eventType === "simple"
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/50"
+                )}
+              >
+                <CalendarIcon className="w-5 h-5 mb-1 text-primary" />
+                <p className="font-semibold text-sm">Enkel</p>
+                <p className="text-xs text-muted-foreground">Vanlig händelse</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setEventType("major_event")}
+                className={cn(
+                  "p-3 rounded-xl border-2 transition-all text-left",
+                  eventType === "major_event"
+                    ? "border-accent bg-accent/5"
+                    : "border-border hover:border-accent/50"
+                )}
+              >
+                <Sparkles className="w-5 h-5 mb-1 text-accent" />
+                <p className="font-semibold text-sm">Storhelg</p>
+                <p className="text-xs text-muted-foreground">Med planering</p>
+              </button>
+            </div>
+          </div>
+
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">Titel *</Label>
@@ -185,7 +223,7 @@ const AddEventModal = ({
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover">
                 {eventCategories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     {cat.label}
@@ -198,11 +236,7 @@ const AddEventModal = ({
           {/* All day toggle */}
           <div className="flex items-center justify-between">
             <Label htmlFor="allDay">Heldag</Label>
-            <Switch
-              id="allDay"
-              checked={allDay}
-              onCheckedChange={setAllDay}
-            />
+            <Switch id="allDay" checked={allDay} onCheckedChange={setAllDay} />
           </div>
 
           {/* Time inputs */}
@@ -238,11 +272,12 @@ const AddEventModal = ({
                   key={c.value}
                   type="button"
                   onClick={() => setColor(color === c.value ? "" : c.value)}
-                  className={`w-8 h-8 rounded-full transition-all ${
+                  className={cn(
+                    "w-8 h-8 rounded-full transition-all",
                     color === c.value
                       ? "ring-2 ring-offset-2 ring-foreground scale-110"
                       : "hover:scale-105"
-                  }`}
+                  )}
                   style={{ backgroundColor: c.value }}
                   title={c.label}
                 />
@@ -265,7 +300,7 @@ const AddEventModal = ({
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover">
                   <SelectItem value="yearly">Varje år</SelectItem>
                   <SelectItem value="monthly">Varje månad</SelectItem>
                   <SelectItem value="weekly">Varje vecka</SelectItem>
@@ -276,7 +311,12 @@ const AddEventModal = ({
 
           {/* Submit button */}
           <div className="flex gap-3 pt-2">
-            <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              className="flex-1"
+            >
               Avbryt
             </Button>
             <Button
@@ -285,7 +325,7 @@ const AddEventModal = ({
               className="flex-1"
               disabled={createEvent.isPending}
             >
-              {createEvent.isPending ? "Sparar..." : "Spara"}
+              {createEvent.isPending ? "Sparar..." : "Spara händelse"}
             </Button>
           </div>
         </form>
