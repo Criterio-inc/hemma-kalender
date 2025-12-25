@@ -46,6 +46,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Event, useUpdateEvent, useDeleteEvent } from "@/hooks/useEvents";
 import { useTimelinePhases } from "@/hooks/useTimeline";
 import TimelineView from "./TimelineView";
+import EventTodoList from "@/components/todos/EventTodoList";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -236,23 +237,20 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
                 />
               </TabsContent>
 
-              <TabsContent value="planning" className="mt-4">
-                <TimelineView
-                  phases={timelinePhases}
-                  eventDate={new Date(event.start_date)}
-                />
+              <TabsContent value="planning" className="mt-4 space-y-6">
+                {event.has_timeline && (
+                  <TimelineView
+                    phases={timelinePhases}
+                    eventDate={new Date(event.start_date)}
+                  />
+                )}
 
-                {/* Planning actions */}
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  <Button variant="outline" className="w-full" disabled>
-                    <ListTodo className="w-4 h-4 mr-2" />
-                    Att göra-lista
-                  </Button>
-                  <Button variant="outline" className="w-full" disabled>
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    Recept
-                  </Button>
-                </div>
+                {/* Todo list */}
+                <EventTodoList
+                  eventId={event.id}
+                  householdCode={event.household_code}
+                  hasTimeline={event.has_timeline || false}
+                />
               </TabsContent>
 
               <TabsContent value="recipes" className="mt-4">

@@ -7,6 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  ListTodo,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getSession, logout, HouseholdSession } from "@/lib/auth";
@@ -17,6 +18,7 @@ import MonthGrid from "@/components/calendar/MonthGrid";
 import DayDetailModal from "@/components/calendar/DayDetailModal";
 import AddEventModal from "@/components/calendar/AddEventModal";
 import EventDetailModal from "@/components/calendar/EventDetailModal";
+import TodayTodosWidget from "@/components/todos/TodayTodosWidget";
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -108,6 +110,13 @@ const Calendar = () => {
             {/* Actions */}
             <div className="flex items-center gap-2">
               <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/todos")}
+              >
+                <ListTodo className="w-5 h-5" />
+              </Button>
+              <Button
                 variant="hero"
                 size="sm"
                 onClick={handleAddEventFromHeader}
@@ -174,6 +183,11 @@ const Calendar = () => {
             onDayClick={handleDayClick}
           />
         )}
+
+        {/* Today's Todos Widget */}
+        <div className="mt-6">
+          <TodayTodosWidget householdCode={session.householdCode} />
+        </div>
 
         {/* Stats */}
         <div className="mt-6 flex items-center justify-center gap-6 text-sm text-muted-foreground">
