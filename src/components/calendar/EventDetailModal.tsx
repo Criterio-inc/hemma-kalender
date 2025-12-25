@@ -13,6 +13,7 @@ import {
   Image,
   StickyNote,
   ChevronRight,
+  Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +49,9 @@ import { useTimelinePhases } from "@/hooks/useTimeline";
 import TimelineView from "./TimelineView";
 import EventTodoList from "@/components/todos/EventTodoList";
 import EventRecipeList from "@/components/recipes/EventRecipeList";
+import EventImageGallery from "@/components/events/EventImageGallery";
+import EventNotesList from "@/components/events/EventNotesList";
+import EventLinksList from "@/components/events/EventLinksList";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -205,7 +209,7 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
           {isMajorEvent && !isEditing ? (
             // Major Event with tabs
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+              <TabsList className="grid w-full grid-cols-3 md:grid-cols-6">
                 <TabsTrigger value="overview" className="text-xs">
                   <CalendarIcon className="w-3.5 h-3.5 mr-1" />
                   Översikt
@@ -218,13 +222,17 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
                   <BookOpen className="w-3.5 h-3.5 mr-1" />
                   Recept
                 </TabsTrigger>
-                <TabsTrigger value="images" className="text-xs hidden md:flex" disabled>
+                <TabsTrigger value="images" className="text-xs">
                   <Image className="w-3.5 h-3.5 mr-1" />
                   Bilder
                 </TabsTrigger>
-                <TabsTrigger value="notes" className="text-xs hidden md:flex" disabled>
+                <TabsTrigger value="notes" className="text-xs hidden md:flex">
                   <StickyNote className="w-3.5 h-3.5 mr-1" />
                   Anteckningar
+                </TabsTrigger>
+                <TabsTrigger value="links" className="text-xs hidden md:flex">
+                  <Link2 className="w-3.5 h-3.5 mr-1" />
+                  Länkar
                 </TabsTrigger>
               </TabsList>
 
@@ -262,15 +270,24 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
               </TabsContent>
 
               <TabsContent value="images" className="mt-4">
-                <div className="text-center py-8 text-muted-foreground">
-                  Kommer snart...
-                </div>
+                <EventImageGallery
+                  eventId={event.id}
+                  householdCode={event.household_code}
+                />
               </TabsContent>
 
               <TabsContent value="notes" className="mt-4">
-                <div className="text-center py-8 text-muted-foreground">
-                  Kommer snart...
-                </div>
+                <EventNotesList
+                  eventId={event.id}
+                  householdCode={event.household_code}
+                />
+              </TabsContent>
+
+              <TabsContent value="links" className="mt-4">
+                <EventLinksList
+                  eventId={event.id}
+                  householdCode={event.household_code}
+                />
               </TabsContent>
             </Tabs>
           ) : isEditing ? (
