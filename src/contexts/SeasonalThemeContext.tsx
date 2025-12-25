@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { EventCategory, getEventTheme } from "@/themes/eventThemes";
 
 // Month index (0-11) mapped to theme names
 const monthThemes = [
@@ -22,12 +23,17 @@ interface SeasonalThemeContextType {
   theme: SeasonalTheme;
   month: number;
   seasonalClass: string;
+  eventThemeClass: string | null;
+  eventCategory: EventCategory | null;
+  setEventTheme: (category: EventCategory | null) => void;
+  isEventThemeActive: boolean;
 }
 
 const SeasonalThemeContext = createContext<SeasonalThemeContextType | undefined>(undefined);
 
 export function SeasonalThemeProvider({ children }: { children: ReactNode }) {
   const [month, setMonth] = useState(new Date().getMonth());
+  const [eventCategory, setEventCategory] = useState<EventCategory | null>(null);
 
   useEffect(() => {
     // Check for month change every minute
@@ -41,12 +47,30 @@ export function SeasonalThemeProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [month]);
 
+  const setEventTheme = useCallback((category: EventCategory | null) => {
+    setEventCategory(category);
+  }, []);
+
   const theme = monthThemes[month];
   const seasonalClass = `season-${theme}`;
+  const eventTheme = eventCategory ? getEventTheme(eventCategory) : null;
+  const eventThemeClass = eventTheme?.cssClass || null;
+  const isEventThemeActive = !!eventCategory;
+
+  // Determine which class to apply - event theme takes priority
+  const activeClass = eventThemeClass || seasonalClass;
 
   return (
-    <SeasonalThemeContext.Provider value={{ theme, month, seasonalClass }}>
-      <div className={`${seasonalClass} transition-colors duration-1000`}>
+    <SeasonalThemeContext.Provider value={{ 
+      theme, 
+      month, 
+      seasonalClass, 
+      eventThemeClass,
+      eventCategory,
+      setEventTheme,
+      isEventThemeActive
+    }}>
+      <div className={`${activeClass} transition-colors duration-500`}>
         {children}
       </div>
     </SeasonalThemeContext.Provider>
