@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Trash2, Upload, X, Loader2 } from "lucide-react";
+import { Plus, Trash2, Upload, X, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,7 @@ import {
   useUpdateRecipe,
   uploadRecipeImage,
 } from "@/hooks/useRecipes";
+import { useAI } from "@/hooks/useAI";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -74,6 +75,12 @@ const RecipeForm = ({ isOpen, onClose, householdCode, recipe }: RecipeFormProps)
   const fileInputRef = useRef<HTMLInputElement>(null);
   const createRecipe = useCreateRecipe();
   const updateRecipe = useUpdateRecipe();
+  const { categorize, isLoading: aiLoading } = useAI();
+  const [aiSuggestions, setAiSuggestions] = useState<{
+    tags?: string[];
+    category?: string;
+    reasoning?: string;
+  } | null>(null);
 
   useEffect(() => {
     if (recipe) {
@@ -420,7 +427,83 @@ const RecipeForm = ({ isOpen, onClose, householdCode, recipe }: RecipeFormProps)
 
           {/* Tags */}
           <div className="space-y-3">
-            <Label>Taggar</Label>
+            <div className="flex items-center justify-between">
+              <Label>Taggar</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  const result = await categorize('recipe', {
+                    title,
+                    description,
+                    ingredients,
+                    instructions,
+                  });
+                  if (result) {
+                    setAiSuggestions({
+                      tags: result.suggestedTags,
+                      category: result.suggestedCategory,
+                      reasoning: result.reasoning,
+                    });
+                    toast.success('AI-förslag klara!');
+                  }
+                }}
+                disabled={aiLoading || !title.trim()}
+              >
+                {aiLoading ? (
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4 mr-1" />
+                )}
+                AI-förslag
+              </Button>
+            </div>
+
+            {/* AI Suggestions */}
+            {aiSuggestions && (
+              <div className="bg-accent/10 border border-accent/20 rounded-xl p-3 space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium text-accent">
+                  <Sparkles className="w-4 h-4" />
+                  AI-förslag
+                </div>
+                {aiSuggestions.category && aiSuggestions.category !== category && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Kategori:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCategory(aiSuggestions.category!);
+                        toast.success('Kategori uppdaterad');
+                      }}
+                      className="px-2 py-0.5 text-xs rounded-full bg-accent/20 text-accent hover:bg-accent/30 transition-colors"
+                    >
+                      + {categories.find(c => c.value === aiSuggestions.category)?.label || aiSuggestions.category}
+                    </button>
+                  </div>
+                )}
+                {aiSuggestions.tags && aiSuggestions.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {aiSuggestions.tags
+                      .filter(t => !tags.includes(t))
+                      .map(tag => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => handleAddTag(tag)}
+                          className="px-2 py-0.5 text-xs rounded-full bg-accent/20 text-accent hover:bg-accent/30 transition-colors"
+                        >
+                          + {tag}
+                        </button>
+                      ))}
+                  </div>
+                )}
+                {aiSuggestions.reasoning && (
+                  <p className="text-xs text-muted-foreground">{aiSuggestions.reasoning}</p>
+                )}
+              </div>
+            )}
+
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <Badge
