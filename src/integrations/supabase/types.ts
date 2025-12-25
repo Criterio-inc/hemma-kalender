@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_recipes: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          meal_type: string | null
+          planned_date: string | null
+          recipe_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          meal_type?: string | null
+          planned_date?: string | null
+          recipe_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          meal_type?: string | null
+          planned_date?: string | null
+          recipe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_recipes_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_recipes_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_timeline: {
         Row: {
           created_at: string
