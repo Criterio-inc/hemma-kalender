@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { BookOpen, Plus, ChevronLeft, Loader2, Search, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,8 @@ import { useRecipes, Recipe } from "@/hooks/useRecipes";
 import { useAI } from "@/hooks/useAI";
 import RecipeCard from "@/components/recipes/RecipeCard";
 import RecipeForm from "@/components/recipes/RecipeForm";
+import { RecipeGridSkeleton } from "@/components/ui/skeleton-loaders";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
 const categoryFilters = [
@@ -257,9 +260,7 @@ const Recipes = () => {
 
         {/* Recipe grid */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          </div>
+          <RecipeGridSkeleton count={6} />
         ) : error ? (
           <div className="text-center py-20">
             <p className="text-destructive font-medium">
@@ -274,39 +275,43 @@ const Recipes = () => {
             </Button>
           </div>
         ) : filteredRecipes.length === 0 ? (
-          <div className="text-center py-20">
-            <BookOpen className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              {aiResults !== null
-                ? "Inga matchande recept"
-                : searchQuery || categoryFilter !== "all"
-                ? "Inga recept hittades"
-                : "Inga recept än"}
-            </h3>
-            <p className="text-muted-foreground mb-4">
-              {aiResults !== null
+          <EmptyState
+            type="recipes"
+            title={aiResults !== null ? "Inga matchande recept" : undefined}
+            description={
+              aiResults !== null
                 ? "Prova att beskriva vad du letar efter på ett annat sätt"
                 : searchQuery || categoryFilter !== "all"
                 ? "Prova att ändra din sökning"
-                : "Skapa ditt första recept!"}
-            </p>
-            {!searchQuery && categoryFilter === "all" && aiResults === null && (
-              <Button variant="hero" onClick={handleAdd}>
-                <Plus className="w-4 h-4 mr-2" />
-                Skapa recept
-              </Button>
-            )}
-          </div>
+                : undefined
+            }
+            onAction={!searchQuery && categoryFilter === "all" && aiResults === null ? handleAdd : undefined}
+          />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredRecipes.map((recipe) => (
-              <RecipeCard
+          <motion.div 
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+            }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {filteredRecipes.map((recipe, index) => (
+              <motion.div
                 key={recipe.id}
-                recipe={recipe}
-                onClick={() => handleRecipeClick(recipe)}
-              />
+                variants={{
+                  hidden: { opacity: 0, y: 15 },
+                  show: { opacity: 1, y: 0 }
+                }}
+              >
+                <RecipeCard
+                  recipe={recipe}
+                  onClick={() => handleRecipeClick(recipe)}
+                />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </main>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -41,6 +42,8 @@ import AddEventModal from "@/components/calendar/AddEventModal";
 import EventDetailModal from "@/components/calendar/EventDetailModal";
 import TodayTodosWidget from "@/components/todos/TodayTodosWidget";
 import QuickAccessWidgets from "@/components/widgets/QuickAccessWidgets";
+import { CalendarGridSkeleton } from "@/components/ui/skeleton-loaders";
+import { ErrorState } from "@/components/ui/error-state";
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -262,59 +265,58 @@ const Calendar = () => {
 
         {/* Calendar Views */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          </div>
+          <CalendarGridSkeleton />
         ) : error ? (
-          <div className="text-center py-20">
-            <p className="text-destructive font-medium">
-              Kunde inte hämta händelser
-            </p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => window.location.reload()}
-            >
-              Försök igen
-            </Button>
-          </div>
+          <ErrorState
+            type="server"
+            title="Kunde inte hämta händelser"
+            onRetry={() => window.location.reload()}
+          />
         ) : (
-          <>
-            {currentView === "month" && (
-              <MonthGrid
-                currentDate={currentDate}
-                events={monthEvents}
-                onDayClick={handleDayClick}
-              />
-            )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentView}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              {currentView === "month" && (
+                <MonthGrid
+                  currentDate={currentDate}
+                  events={monthEvents}
+                  onDayClick={handleDayClick}
+                />
+              )}
 
-            {currentView === "week" && (
-              <WeekView
-                currentDate={currentDate}
-                events={weekEvents}
-                onTimeSlotClick={handleTimeSlotClick}
-                onEventClick={handleEventClick}
-              />
-            )}
+              {currentView === "week" && (
+                <WeekView
+                  currentDate={currentDate}
+                  events={weekEvents}
+                  onTimeSlotClick={handleTimeSlotClick}
+                  onEventClick={handleEventClick}
+                />
+              )}
 
-            {currentView === "day" && (
-              <DayView
-                currentDate={currentDate}
-                events={dayEvents}
-                onTimeSlotClick={handleDayViewTimeSlotClick}
-                onEventClick={handleEventClick}
-              />
-            )}
+              {currentView === "day" && (
+                <DayView
+                  currentDate={currentDate}
+                  events={dayEvents}
+                  onTimeSlotClick={handleDayViewTimeSlotClick}
+                  onEventClick={handleEventClick}
+                />
+              )}
 
-            {currentView === "year" && (
-              <YearView
-                year={currentDate.getFullYear()}
-                events={yearEvents}
-                onMonthClick={handleMonthClick}
-                onDayClick={handleYearDayClick}
-              />
-            )}
-          </>
+              {currentView === "year" && (
+                <YearView
+                  year={currentDate.getFullYear()}
+                  events={yearEvents}
+                  onMonthClick={handleMonthClick}
+                  onDayClick={handleYearDayClick}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         )}
 
         {/* Today's Todos Widget - only show in day/month view */}

@@ -1,8 +1,9 @@
 import { format, isPast, isToday, isTomorrow, differenceInDays } from "date-fns";
 import { sv } from "date-fns/locale";
+import { motion } from "framer-motion";
 import { Trash2, Edit2, Calendar, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { AnimatedCheckbox } from "@/components/ui/animated-checkbox";
 import { Todo, useToggleTodo, useDeleteTodo } from "@/hooks/useTodos";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -84,7 +85,12 @@ const TodoItem = ({ todo, onEdit, showEventLink = true }: TodoItemProps) => {
   const category = categoryConfig[todo.category || "general"] || categoryConfig.general;
 
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.2 }}
       className={cn(
         "group flex items-start gap-3 p-4 rounded-xl bg-card border border-border",
         "transition-all duration-200 hover:shadow-md hover:border-primary/20",
@@ -93,14 +99,11 @@ const TodoItem = ({ todo, onEdit, showEventLink = true }: TodoItemProps) => {
     >
       {/* Checkbox */}
       <div className="pt-0.5">
-        <Checkbox
+        <AnimatedCheckbox
           checked={todo.completed || false}
           onCheckedChange={handleToggle}
           disabled={toggleTodo.isPending}
-          className={cn(
-            "h-5 w-5 rounded-full transition-all",
-            "data-[state=checked]:bg-success data-[state=checked]:border-success"
-          )}
+          size="md"
         />
       </div>
 
@@ -175,7 +178,7 @@ const TodoItem = ({ todo, onEdit, showEventLink = true }: TodoItemProps) => {
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

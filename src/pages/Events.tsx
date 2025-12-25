@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { format, parseISO, isSameMonth } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Search, Filter, Star, Calendar, Loader2 } from "lucide-react";
@@ -18,6 +19,8 @@ import AppLayout from "@/components/layout/AppLayout";
 import { getSession, HouseholdSession } from "@/lib/auth";
 import { useEventsForYear, Event } from "@/hooks/useEvents";
 import EventDetailModal from "@/components/calendar/EventDetailModal";
+import { EventListSkeleton } from "@/components/ui/skeleton-loaders";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const eventCategories = [
   { value: "all", label: "Alla kategorier" },
@@ -162,81 +165,98 @@ const Events = () => {
 
         {/* Events List */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          </div>
+          <EventListSkeleton count={5} />
         ) : filteredEvents.length === 0 ? (
-          <div className="text-center py-12">
-            <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">Inga händelser hittades</p>
-          </div>
+          <EmptyState type="events" />
         ) : (
-          <div className="space-y-8">
+          <motion.div 
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 1, transition: { staggerChildren: 0.03 } }
+            }}
+            className="space-y-8"
+          >
             {Object.entries(groupedEvents).map(([monthKey, monthEvents]) => (
-              <div key={monthKey}>
+              <motion.div 
+                key={monthKey}
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1 }
+                }}
+              >
                 <h2 className="text-lg font-semibold text-foreground capitalize mb-3 sticky top-16 bg-background py-2 z-10">
                   {format(parseISO(`${monthKey}-01`), "MMMM yyyy", { locale: sv })}
                 </h2>
 
                 <div className="space-y-2">
-                  {monthEvents.map((event) => (
-                    <Card
+                  {monthEvents.map((event, index) => (
+                    <motion.div
                       key={event.id}
-                      className="cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => setSelectedEvent(event)}
+                      variants={{
+                        hidden: { opacity: 0, y: 10 },
+                        show: { opacity: 1, y: 0 }
+                      }}
+                      whileHover={{ y: -2, transition: { duration: 0.2 } }}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              {event.event_type === "major" && (
-                                <Star className="w-4 h-4 text-warning fill-warning" />
-                              )}
-                              <h3 className="font-semibold text-foreground truncate">
-                                {event.title}
-                              </h3>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              {format(parseISO(event.start_date), "EEEE d MMMM", {
-                                locale: sv,
-                              })}
-                              {!event.all_day && (
-                                <>
-                                  {" "}
-                                  kl{" "}
-                                  {format(parseISO(event.start_date), "HH:mm")}
-                                </>
-                              )}
-                            </p>
-                            {event.description && (
-                              <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
-                                {event.description}
+                      <Card
+                        className="cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => setSelectedEvent(event)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                {event.event_type === "major" && (
+                                  <Star className="w-4 h-4 text-warning fill-warning" />
+                                )}
+                                <h3 className="font-semibold text-foreground truncate">
+                                  {event.title}
+                                </h3>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {format(parseISO(event.start_date), "EEEE d MMMM", {
+                                  locale: sv,
+                                })}
+                                {!event.all_day && (
+                                  <>
+                                    {" "}
+                                    kl{" "}
+                                    {format(parseISO(event.start_date), "HH:mm")}
+                                  </>
+                                )}
                               </p>
-                            )}
-                          </div>
+                              {event.description && (
+                                <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
+                                  {event.description}
+                                </p>
+                              )}
+                            </div>
 
-                          <div className="flex flex-col items-end gap-2">
-                            <Badge
-                              className={getCategoryColor(event.event_category)}
-                            >
-                              {eventCategories.find(
-                                (c) => c.value === event.event_category
-                              )?.label || "Övrigt"}
-                            </Badge>
-                            {event.all_day && (
-                              <Badge variant="outline" className="text-xs">
-                                Heldag
+                            <div className="flex flex-col items-end gap-2">
+                              <Badge
+                                className={getCategoryColor(event.event_category)}
+                              >
+                                {eventCategories.find(
+                                  (c) => c.value === event.event_category
+                                )?.label || "Övrigt"}
                               </Badge>
-                            )}
+                              {event.all_day && (
+                                <Badge variant="outline" className="text-xs">
+                                  Heldag
+                                </Badge>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
 
