@@ -8,6 +8,8 @@ import Calendar from "./pages/Calendar";
 import Todos from "./pages/Todos";
 import Recipes from "./pages/Recipes";
 import RecipeDetail from "./pages/RecipeDetail";
+import ShoppingLists from "./pages/ShoppingLists";
+import MealPlan from "./pages/MealPlan";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/todos" element={<Todos />} />
           <Route path="/recipes" element={<Recipes />} />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
+          <Route path="/shopping" element={<ShoppingLists />} />
+          <Route path="/meal-plan" element={<MealPlan />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -282,6 +282,81 @@ export type Database = {
           },
         ]
       }
+      meal_plan_items: {
+        Row: {
+          created_at: string
+          custom_meal_name: string | null
+          day_of_week: number
+          id: string
+          meal_plan_id: string
+          meal_type: string
+          notes: string | null
+          recipe_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          custom_meal_name?: string | null
+          day_of_week: number
+          id?: string
+          meal_plan_id: string
+          meal_type: string
+          notes?: string | null
+          recipe_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          custom_meal_name?: string | null
+          day_of_week?: number
+          id?: string
+          meal_plan_id?: string
+          meal_type?: string
+          notes?: string | null
+          recipe_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_plan_items_meal_plan_id_fkey"
+            columns: ["meal_plan_id"]
+            isOneToOne: false
+            referencedRelation: "meal_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meal_plan_items_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meal_plans: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          household_code: string
+          id: string
+          updated_at: string
+          week_start_date: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          household_code: string
+          id?: string
+          updated_at?: string
+          week_start_date: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          household_code?: string
+          id?: string
+          updated_at?: string
+          week_start_date?: string
+        }
+        Relationships: []
+      }
       notes: {
         Row: {
           content: string
@@ -382,6 +457,94 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      shopping_list_items: {
+        Row: {
+          category: string | null
+          checked: boolean | null
+          checked_at: string | null
+          checked_by: string | null
+          created_at: string
+          id: string
+          item_name: string
+          quantity: string | null
+          shopping_list_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          category?: string | null
+          checked?: boolean | null
+          checked_at?: string | null
+          checked_by?: string | null
+          created_at?: string
+          id?: string
+          item_name: string
+          quantity?: string | null
+          shopping_list_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          category?: string | null
+          checked?: boolean | null
+          checked_at?: string | null
+          checked_by?: string | null
+          created_at?: string
+          id?: string
+          item_name?: string
+          quantity?: string | null
+          shopping_list_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopping_list_items_shopping_list_id_fkey"
+            columns: ["shopping_list_id"]
+            isOneToOne: false
+            referencedRelation: "shopping_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopping_lists: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          created_from: string | null
+          event_id: string | null
+          household_code: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          created_from?: string | null
+          event_id?: string | null
+          household_code: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          created_from?: string | null
+          event_id?: string | null
+          household_code?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopping_lists_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       todos: {
         Row: {
