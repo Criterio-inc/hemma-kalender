@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Calendar as CalendarIcon,
-  LogOut,
-  Plus,
   ChevronLeft,
   ChevronRight,
   Loader2,
-  ListTodo,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getSession, logout, HouseholdSession } from "@/lib/auth";
+import { getSession, HouseholdSession } from "@/lib/auth";
 import {
   format,
   addMonths,
@@ -32,6 +28,7 @@ import {
   useEventsForYear,
   Event,
 } from "@/hooks/useEvents";
+import AppLayout from "@/components/layout/AppLayout";
 import MonthGrid from "@/components/calendar/MonthGrid";
 import WeekView from "@/components/calendar/WeekView";
 import DayView from "@/components/calendar/DayView";
@@ -43,6 +40,7 @@ import DayDetailModal from "@/components/calendar/DayDetailModal";
 import AddEventModal from "@/components/calendar/AddEventModal";
 import EventDetailModal from "@/components/calendar/EventDetailModal";
 import TodayTodosWidget from "@/components/todos/TodayTodosWidget";
+import QuickAccessWidgets from "@/components/widgets/QuickAccessWidgets";
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -162,11 +160,6 @@ const Calendar = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
   const handleDayClick = (date: Date) => {
     setSelectedDate(date);
   };
@@ -229,54 +222,13 @@ const Calendar = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-lg border-b border-border">
-        <div className="container max-w-5xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            {/* Logo and household info */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-sm">
-                <CalendarIcon className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-lg font-display font-bold text-foreground leading-tight">
-                  {session.householdName}
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  {session.householdCode}
-                </p>
-              </div>
-            </div>
+    <AppLayout onAddEvent={handleAddEventFromHeader}>
+      <div className="container max-w-5xl mx-auto px-4 py-6">
+        {/* Quick Access Widgets */}
+        {currentView === "month" && (
+          <QuickAccessWidgets householdCode={session.householdCode} />
+        )}
 
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/todos")}
-              >
-                <ListTodo className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="hero"
-                size="sm"
-                onClick={handleAddEventFromHeader}
-                className="gap-1.5"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Ny händelse</span>
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container max-w-5xl mx-auto px-4 py-6">
         {/* View Switcher */}
         <div className="flex justify-center mb-4">
           <CalendarViewSwitcher
@@ -399,7 +351,7 @@ const Calendar = () => {
             </span>
           )}
         </div>
-      </main>
+      </div>
 
       {/* Day Detail Modal */}
       {selectedDate && (
@@ -432,7 +384,7 @@ const Calendar = () => {
           event={selectedEvent}
         />
       )}
-    </div>
+    </AppLayout>
   );
 };
 
