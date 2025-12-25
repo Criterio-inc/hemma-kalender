@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { startOfMonth, endOfMonth, format } from "date-fns";
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfYear, endOfYear, format } from "date-fns";
 
 // Use the generated types from Supabase
 type Event = {
@@ -98,6 +98,50 @@ export const useEventsForDate = (householdCode: string, date: Date) => {
         .eq("household_code", householdCode)
         .gte("start_date", startOfDay.toISOString())
         .lte("start_date", endOfDay.toISOString())
+        .order("start_date", { ascending: true });
+
+      if (error) throw error;
+      return data as Event[];
+    },
+    enabled: !!householdCode,
+  });
+};
+
+export const useEventsForWeek = (householdCode: string, date: Date) => {
+  const weekStart = startOfWeek(date, { weekStartsOn: 1 });
+  const weekEnd = endOfWeek(date, { weekStartsOn: 1 });
+
+  return useQuery({
+    queryKey: ["events", householdCode, "week", format(weekStart, "yyyy-MM-dd")],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("household_code", householdCode)
+        .gte("start_date", weekStart.toISOString())
+        .lte("start_date", weekEnd.toISOString())
+        .order("start_date", { ascending: true });
+
+      if (error) throw error;
+      return data as Event[];
+    },
+    enabled: !!householdCode,
+  });
+};
+
+export const useEventsForYear = (householdCode: string, year: number) => {
+  const yearStart = startOfYear(new Date(year, 0, 1));
+  const yearEnd = endOfYear(new Date(year, 0, 1));
+
+  return useQuery({
+    queryKey: ["events", householdCode, "year", year],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("household_code", householdCode)
+        .gte("start_date", yearStart.toISOString())
+        .lte("start_date", yearEnd.toISOString())
         .order("start_date", { ascending: true });
 
       if (error) throw error;
