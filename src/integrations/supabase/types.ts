@@ -360,6 +360,30 @@ export type Database = {
           },
         ]
       }
+      household_preferences: {
+        Row: {
+          created_at: string
+          household_code: string
+          id: string
+          preferences: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          household_code: string
+          id?: string
+          preferences?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          household_code?: string
+          id?: string
+          preferences?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       households: {
         Row: {
           created_at: string

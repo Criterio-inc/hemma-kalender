@@ -88,21 +88,55 @@ export const useCreateEventShare = () => {
   });
 };
 
+// Hook to get all shared events for a household
+export const useHouseholdShares = (householdCode: string) => {
+  return useQuery({
+    queryKey: ["household_shares", householdCode],
+    queryFn: async () => {
+      // Get all events for the household first
+      const { data: events, error: eventsError } = await supabase
+        .from("events")
+        .select("id")
+        .eq("household_code", householdCode);
+
+      if (eventsError) throw eventsError;
+
+      if (!events || events.length === 0) return [];
+
+      const eventIds = events.map((e) => e.id);
+
+      const { data, error } = await supabase
+        .from("shared_events")
+        .select("*")
+        .in("event_id", eventIds)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data as SharedEvent[];
+    },
+    enabled: !!householdCode,
+  });
+};
+
 // Hook to delete a share link
 export const useDeleteEventShare = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, eventId }: { id: string; eventId: string }) => {
+    mutationFn: async ({ id, eventId }: { id: string; eventId?: string }) => {
       const { error } = await supabase
         .from("shared_events")
         .delete()
         .eq("id", id);
 
       if (error) throw error;
+      return eventId;
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["shared_events", variables.eventId] });
+    onSuccess: (eventId, _) => {
+      if (eventId) {
+        queryClient.invalidateQueries({ queryKey: ["shared_events", eventId] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["household_shares"] });
     },
   });
 };
