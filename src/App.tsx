@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SeasonalThemeProvider } from "@/contexts/SeasonalThemeContext";
 import SeasonalDecorations from "@/components/seasonal/SeasonalDecorations";
+import WelcomeModal from "@/components/onboarding/WelcomeModal";
 import Login from "./pages/Login";
 import Calendar from "./pages/Calendar";
 import Todos from "./pages/Todos";
@@ -18,6 +19,8 @@ import SharedEvent from "./pages/SharedEvent";
 import SharedRecipe from "./pages/SharedRecipe";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
+import Help from "./pages/Help";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +32,7 @@ const App = () => (
         <SeasonalDecorations />
         <Toaster />
         <Sonner position="top-center" richColors />
+        <WelcomeModal />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Login />} />
@@ -44,6 +48,8 @@ const App = () => (
             <Route path="/shared/recipe/:token" element={<SharedRecipe />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
