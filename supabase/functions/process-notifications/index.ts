@@ -43,6 +43,76 @@ serve(async (req) => {
       );
     }
 
+    // Group notifications by household code for push notifications
+    const notificationsByHousehold: Record<string, typeof pendingNotifications> = {};
+    for (const notification of pendingNotifications) {
+      if (!notificationsByHousehold[notification.household_code]) {
+        notificationsByHousehold[notification.household_code] = [];
+      }
+      notificationsByHousehold[notification.household_code].push(notification);
+    }
+
+    // Send push notifications for each household
+    for (const [householdCode, notifications] of Object.entries(notificationsByHousehold)) {
+      for (const notification of notifications) {
+        try {
+          // Get push subscriptions for this household
+          const { data: subscriptions } = await supabase
+            .from('push_subscriptions')
+            .select('endpoint, p256dh, auth')
+            .eq('household_code', householdCode);
+
+          if (subscriptions && subscriptions.length > 0) {
+            console.log(`Sending push to ${subscriptions.length} devices for household ${householdCode}`);
+            
+            // Send push notification to each subscription
+            for (const sub of subscriptions) {
+              try {
+                const payload = {
+                  title: getNotificationTitle(notification.notification_type),
+                  body: notification.message,
+                  icon: '/favicon.ico',
+                  tag: notification.id,
+                  data: {
+                    eventId: notification.event_id,
+                    todoId: notification.todo_id,
+                    url: notification.event_id ? `/events?id=${notification.event_id}` : '/todos',
+                  },
+                };
+
+                // Simple push without encryption for basic notifications
+                const response = await fetch(sub.endpoint, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'TTL': '86400',
+                  },
+                  body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+                  console.error(`Push failed for endpoint: ${sub.endpoint}`, await response.text());
+                  // Remove expired subscription
+                  if (response.status === 410 || response.status === 404) {
+                    await supabase
+                      .from('push_subscriptions')
+                      .delete()
+                      .eq('endpoint', sub.endpoint);
+                  }
+                } else {
+                  console.log(`Push sent successfully to ${sub.endpoint}`);
+                }
+              } catch (pushError) {
+                console.error('Error sending individual push:', pushError);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error sending push notifications:', error);
+        }
+      }
+    }
+
     // Mark notifications as sent
     const notificationIds = pendingNotifications.map((n) => n.id);
     
@@ -61,9 +131,6 @@ serve(async (req) => {
 
     console.log(`Processed ${notificationIds.length} notifications`);
 
-    // Here you could add push notification logic or email sending
-    // For now, we just mark them as sent so they appear in the in-app notifications
-
     return new Response(
       JSON.stringify({ 
         message: 'Notifications processed successfully',
@@ -73,10 +140,10 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error processing notifications:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -84,3 +151,16 @@ serve(async (req) => {
     );
   }
 });
+
+function getNotificationTitle(type: string): string {
+  switch (type) {
+    case 'event_reminder':
+      return '📅 Event Reminder';
+    case 'todo_reminder':
+      return '✓ Task Reminder';
+    case 'deadline':
+      return '⏰ Deadline Alert';
+    default:
+      return '🔔 Family Calendar';
+  }
+}

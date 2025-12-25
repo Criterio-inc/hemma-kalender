@@ -685,6 +685,36 @@ export type Database = {
           },
         ]
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          household_code: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          household_code: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          household_code?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       recipes: {
         Row: {
           category: string | null
