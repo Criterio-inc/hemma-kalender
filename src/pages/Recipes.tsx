@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BookOpen, Plus, ChevronLeft, Loader2, Search, Sparkles, X, RefreshCw } from "lucide-react";
@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { RecipeErrorFallback } from "@/components/errors";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { useDebounceWithLoading } from "@/hooks/useDebounce";
 
 const categoryFilters = [
   { value: "all", label: "Alla" },
@@ -32,6 +33,9 @@ const Recipes = () => {
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  
+  // Debounced search query
+  const [debouncedSearchQuery, isSearching] = useDebounceWithLoading(searchQuery, 300);
   
   // AI Search state
   const [aiSearchMode, setAiSearchMode] = useState(false);
@@ -55,16 +59,20 @@ const Recipes = () => {
     refetch();
   };
 
-  // Filter recipes (only when not in AI mode)
-  const filteredRecipes = aiResults !== null ? aiResults : recipes.filter((recipe) => {
-    const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Filter recipes with debounced search (only when not in AI mode)
+  const filteredRecipes = useMemo(() => {
+    if (aiResults !== null) return aiResults;
     
-    const matchesCategory = categoryFilter === "all" || recipe.category === categoryFilter;
-    
-    return matchesSearch && matchesCategory;
-  });
+    return recipes.filter((recipe) => {
+      const matchesSearch = recipe.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        recipe.description?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        recipe.tags?.some((t) => t.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
+      
+      const matchesCategory = categoryFilter === "all" || recipe.category === categoryFilter;
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [recipes, debouncedSearchQuery, categoryFilter, aiResults]);
 
   const handleAISearch = async () => {
     if (!aiQuery.trim() || !session) return;
@@ -232,8 +240,11 @@ const Recipes = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Sök recept..."
-                  className="pl-10"
+                  className="pl-10 pr-10"
                 />
+                {isSearching && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground animate-spin" />
+                )}
               </div>
 
               {/* Category filters */}

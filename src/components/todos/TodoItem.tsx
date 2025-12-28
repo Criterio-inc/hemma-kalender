@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { format, isPast, isToday, isTomorrow, differenceInDays } from "date-fns";
 import { sv } from "date-fns/locale";
 import { motion } from "framer-motion";
@@ -27,7 +28,7 @@ const categoryConfig: Record<string, { label: string; color: string }> = {
   general: { label: "Allmänt", color: "bg-muted text-muted-foreground" },
 };
 
-const TodoItem = ({ todo, onEdit, showEventLink = true }: TodoItemProps) => {
+const TodoItem = memo(function TodoItem({ todo, onEdit, showEventLink = true }: TodoItemProps) {
   const toggleTodo = useToggleTodo();
   const deleteTodo = useDeleteTodo();
 
@@ -180,6 +181,6 @@ const TodoItem = ({ todo, onEdit, showEventLink = true }: TodoItemProps) => {
       </div>
     </motion.div>
   );
-};
+});
 
 export default TodoItem;

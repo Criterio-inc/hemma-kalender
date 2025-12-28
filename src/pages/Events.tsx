@@ -22,6 +22,7 @@ import EventDetailModal from "@/components/calendar/EventDetailModal";
 import { EventListSkeleton } from "@/components/ui/skeleton-loaders";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CalendarErrorFallback } from "@/components/errors";
+import { useDebounceWithLoading } from "@/hooks/useDebounce";
 
 const eventCategories = [
   { value: "all", label: "Alla kategorier" },
@@ -40,6 +41,9 @@ const Events = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
+  // Debounced search query
+  const [debouncedSearchQuery, isSearching] = useDebounceWithLoading(searchQuery, 300);
 
   useEffect(() => {
     const currentSession = getSession();
@@ -60,14 +64,14 @@ const Events = () => {
     refetch();
   };
 
-  // Filter and search events
+  // Filter and search events with debounced search
   const filteredEvents = useMemo(() => {
     return events
       .filter((event) => {
-        // Search filter
+        // Search filter (using debounced value)
         if (
-          searchQuery &&
-          !event.title.toLowerCase().includes(searchQuery.toLowerCase())
+          debouncedSearchQuery &&
+          !event.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
         ) {
           return false;
         }
@@ -139,8 +143,11 @@ const Events = () => {
               placeholder="Sök händelser..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 pr-9"
             />
+            {isSearching && (
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground animate-spin" />
+            )}
           </div>
 
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>

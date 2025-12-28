@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Event } from "@/hooks/useEvents";
@@ -25,7 +26,28 @@ const eventColors: Record<string, string> = {
   custom: "bg-primary",
 };
 
-const CalendarCell = ({
+// Custom comparison function for memoization
+function arePropsEqual(prevProps: CalendarCellProps, nextProps: CalendarCellProps): boolean {
+  // Compare primitive props
+  if (prevProps.isCurrentMonth !== nextProps.isCurrentMonth) return false;
+  if (prevProps.isToday !== nextProps.isToday) return false;
+  if (prevProps.isWeekend !== nextProps.isWeekend) return false;
+  if (prevProps.day.getTime() !== nextProps.day.getTime()) return false;
+  
+  // Compare events by length and IDs
+  if (prevProps.events.length !== nextProps.events.length) return false;
+  
+  // Compare event IDs (shallow comparison is enough)
+  for (let i = 0; i < prevProps.events.length; i++) {
+    if (prevProps.events[i].id !== nextProps.events[i].id) return false;
+    if (prevProps.events[i].title !== nextProps.events[i].title) return false;
+  }
+  
+  // Callbacks are stable if using useCallback in parent
+  return true;
+}
+
+const CalendarCell = memo(function CalendarCell({
   day,
   isCurrentMonth,
   isToday,
@@ -33,7 +55,7 @@ const CalendarCell = ({
   events,
   onClick,
   onEventClick,
-}: CalendarCellProps) => {
+}: CalendarCellProps) {
   const dayEvents = events.slice(0, 3);
   const moreCount = events.length - 3;
 
@@ -116,6 +138,6 @@ const CalendarCell = ({
       </div>
     </button>
   );
-};
+}, arePropsEqual);
 
 export default CalendarCell;
