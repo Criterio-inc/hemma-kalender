@@ -103,7 +103,7 @@ const CalendarCell = memo(function CalendarCell({
       )}
 
       {/* Event dots */}
-      <div className="flex flex-wrap gap-1 mt-1" aria-hidden="true">
+      <div className="flex flex-wrap gap-1.5 mt-1" aria-hidden="true">
         {dayEvents.map((event) => (
           <button
             key={event.id}
@@ -112,7 +112,7 @@ const CalendarCell = memo(function CalendarCell({
               onEventClick?.(event);
             }}
             className={cn(
-              "w-2 h-2 rounded-full hover:scale-150 transition-transform cursor-pointer focus-visible-ring",
+              "w-3 h-3 rounded-full hover:scale-125 hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer focus-visible-ring shadow-sm",
               event.color ? "" : eventColors[event.event_category || "custom"] || "bg-primary"
             )}
             style={event.color ? { backgroundColor: event.color } : undefined}
@@ -122,14 +122,14 @@ const CalendarCell = memo(function CalendarCell({
           />
         ))}
         {moreCount > 0 && (
-          <span className="text-[10px] text-muted-foreground font-medium">
+          <span className="text-[10px] text-foreground/70 font-semibold bg-muted px-1 rounded">
             +{moreCount}
           </span>
         )}
       </div>
 
       {/* Event titles on larger screens */}
-      <div className="hidden md:flex flex-col gap-0.5 mt-1 overflow-hidden flex-1" aria-hidden="true">
+      <div className="hidden md:flex flex-col gap-1 mt-1 overflow-hidden flex-1" aria-hidden="true">
         {dayEvents.slice(0, 2).map((event) => (
           <button
             key={event.id}
@@ -137,13 +137,9 @@ const CalendarCell = memo(function CalendarCell({
               e.stopPropagation();
               onEventClick?.(event);
             }}
-            className={cn(
-              "text-xs px-1.5 py-0.5 rounded truncate font-medium text-left hover:opacity-80 transition-opacity cursor-pointer focus-visible-ring",
-              event.color ? "text-foreground" : "text-primary-foreground"
-            )}
+            className="text-xs px-2 py-1 rounded truncate font-semibold text-left hover:shadow-md transition-all cursor-pointer focus-visible-ring text-white"
             style={{
-              backgroundColor: event.color || undefined,
-              ...(event.color ? {} : { backgroundColor: "hsl(var(--primary))" }),
+              backgroundColor: event.color || "hsl(var(--primary))",
             }}
             aria-label={`Visa ${event.title}`}
             tabIndex={-1}
@@ -152,7 +148,7 @@ const CalendarCell = memo(function CalendarCell({
           </button>
         ))}
         {events.length > 2 && (
-          <span className="text-[10px] text-muted-foreground font-medium px-1">
+          <span className="text-[10px] text-foreground/70 font-semibold px-1 bg-muted rounded">
             +{events.length - 2} mer
           </span>
         )}
