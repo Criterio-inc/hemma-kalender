@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { BookOpen, Plus, ChevronLeft, Loader2, Search, Sparkles, X } from "lucide-react";
+import { BookOpen, Plus, ChevronLeft, Loader2, Search, Sparkles, X, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getSession, HouseholdSession } from "@/lib/auth";
@@ -11,7 +11,9 @@ import RecipeCard from "@/components/recipes/RecipeCard";
 import RecipeForm from "@/components/recipes/RecipeForm";
 import { RecipeGridSkeleton } from "@/components/ui/skeleton-loaders";
 import { EmptyState } from "@/components/ui/empty-state";
+import { RecipeErrorFallback } from "@/components/errors";
 import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 const categoryFilters = [
   { value: "all", label: "Alla" },
@@ -24,6 +26,7 @@ const categoryFilters = [
 
 const Recipes = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [session, setSession] = useState<HouseholdSession | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
@@ -46,7 +49,11 @@ const Recipes = () => {
     setSession(currentSession);
   }, [navigate]);
 
-  const { data: recipes = [], isLoading, error } = useRecipes(session?.householdCode || "");
+  const { data: recipes = [], isLoading, error, refetch } = useRecipes(session?.householdCode || "");
+
+  const handleRetry = () => {
+    refetch();
+  };
 
   // Filter recipes (only when not in AI mode)
   const filteredRecipes = aiResults !== null ? aiResults : recipes.filter((recipe) => {
@@ -262,18 +269,7 @@ const Recipes = () => {
         {isLoading ? (
           <RecipeGridSkeleton count={6} />
         ) : error ? (
-          <div className="text-center py-20">
-            <p className="text-destructive font-medium">
-              Kunde inte hämta recept
-            </p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => window.location.reload()}
-            >
-              Försök igen
-            </Button>
-          </div>
+          <RecipeErrorFallback onRetry={handleRetry} />
         ) : filteredRecipes.length === 0 ? (
           <EmptyState
             type="recipes"
