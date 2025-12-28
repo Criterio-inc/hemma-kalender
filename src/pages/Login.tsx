@@ -61,9 +61,9 @@ const Login = () => {
   return (
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Decorative elements */}
-      <div className="absolute top-10 left-10 w-20 h-20 rounded-full bg-primary/10 animate-float" />
-      <div className="absolute bottom-20 right-10 w-32 h-32 rounded-full bg-accent/10 animate-float-delayed" />
-      <div className="absolute top-1/3 right-20 w-16 h-16 rounded-full bg-warning/10 animate-float" />
+      <div className="absolute top-10 left-10 w-24 h-24 rounded-full bg-primary/15 blur-xl" />
+      <div className="absolute bottom-20 right-10 w-36 h-36 rounded-full bg-primary/10 blur-xl" />
+      <div className="absolute top-1/3 right-20 w-20 h-20 rounded-full bg-muted blur-lg" />
 
       <div className="w-full max-w-md animate-fade-in">
         {/* Logo and Title */}
