@@ -30,16 +30,30 @@ const AppLayout = ({ children, onAddEvent, showHeader = true }: AppLayoutProps) 
 
   return (
     <div className="min-h-screen bg-background flex w-full">
+      {/* Skip to main content link for keyboard users */}
+      <a
+        href="#main-content"
+        className="skip-link"
+      >
+        Hoppa till huvudinnehåll
+      </a>
+
       {/* Desktop Sidebar */}
       <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen pb-16 md:pb-0">
         {/* Header */}
-        {showHeader && <AppHeader session={session} onAddEvent={onAddEvent} />}
+        {showHeader && (
+          <header role="banner">
+            <AppHeader session={session} onAddEvent={onAddEvent} />
+          </header>
+        )}
 
         {/* Page Content */}
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1" role="main" tabIndex={-1}>
+          {children}
+        </main>
       </div>
 
       {/* Mobile Bottom Nav */}
