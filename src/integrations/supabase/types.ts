@@ -308,7 +308,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_events_household"
+            columns: ["household_code"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["household_code"]
+          },
+        ]
       }
       guests: {
         Row: {
@@ -620,6 +628,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_notes_household"
+            columns: ["household_code"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["household_code"]
+          },
+          {
             foreignKeyName: "notes_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
@@ -767,7 +782,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_recipes_household"
+            columns: ["household_code"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["household_code"]
+          },
+        ]
       }
       shared_events: {
         Row: {
@@ -922,6 +945,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_shopping_lists_household"
+            columns: ["household_code"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["household_code"]
+          },
+          {
             foreignKeyName: "shopping_lists_event_id_fkey"
             columns: ["event_id"]
             isOneToOne: false
@@ -986,6 +1016,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_todos_household"
+            columns: ["household_code"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["household_code"]
+          },
           {
             foreignKeyName: "todos_event_id_fkey"
             columns: ["event_id"]
