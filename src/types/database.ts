@@ -159,6 +159,43 @@ export type NoteInsert = Omit<Note, 'id' | 'created_at' | 'updated_at'> & {
 
 export type NoteUpdate = Partial<NoteInsert>;
 
+// Event Timeline Phase
+export interface EventTimelinePhase {
+  id: string;
+  event_id: string;
+  phase_name: string;
+  weeks_before: number;
+  description: string | null;
+  sort_order: number;
+  created_at: string;
+}
+
+export type EventTimelinePhaseInsert = Omit<EventTimelinePhase, 'id' | 'created_at'> & {
+  id?: string;
+  created_at?: string;
+};
+
+export type EventTimelinePhaseUpdate = Partial<EventTimelinePhaseInsert>;
+
+// Event Recipe (linking table)
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'dessert';
+
+export interface EventRecipe {
+  id: string;
+  event_id: string;
+  recipe_id: string;
+  meal_type: MealType | null;
+  planned_date: string | null;
+  created_at: string;
+}
+
+export type EventRecipeInsert = Omit<EventRecipe, 'id' | 'created_at'> & {
+  id?: string;
+  created_at?: string;
+};
+
+export type EventRecipeUpdate = Partial<EventRecipeInsert>;
+
 // Swedish Holidays
 export interface SwedishHoliday {
   date: string; // YYYY-MM-DD format
