@@ -1,13 +1,10 @@
-import { useState, useRef } from "react";
-import { Image as ImageIcon, Plus, Trash2, Upload, X, Loader2, Edit2 } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Image as ImageIcon, Plus, Trash2, Upload, Loader2 } from "lucide-react";
+import imageCompression from "browser-image-compression";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import { Lightbox } from "@/components/ui/lightbox";
+import { LazyImage } from "@/components/ui/lazy-image";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,12 +19,13 @@ import {
   EventImage,
   useEventImages,
   useCreateImage,
-  useUpdateImage,
   useDeleteImage,
   uploadEventImage,
 } from "@/hooks/useImages";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 interface EventImageGalleryProps {
   eventId: string;
@@ -36,56 +34,85 @@ interface EventImageGalleryProps {
 
 const EventImageGallery = ({ eventId, householdCode }: EventImageGalleryProps) => {
   const [isUploading, setIsUploading] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState<EventImage | null>(null);
-  const [editingCaption, setEditingCaption] = useState<string | null>(null);
-  const [captionValue, setCaptionValue] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [deletingImage, setDeletingImage] = useState<EventImage | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: images = [], isLoading } = useEventImages(eventId);
   const createImage = useCreateImage();
-  const updateImage = useUpdateImage();
   const deleteImage = useDeleteImage();
+
+  const compressImage = useCallback(async (file: File): Promise<File> => {
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+    try {
+      return await imageCompression(file, options);
+    } catch {
+      return file;
+    }
+  }, []);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
     setIsUploading(true);
+    setUploadProgress(0);
 
+    const validFiles = files.filter(file => {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast.error(`${file.name}: Endast JPG, PNG, WebP stöds`);
+        return false;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name} är för stor (max 5MB)`);
+        return false;
+      }
+      return true;
+    });
+
+    let uploaded = 0;
     try {
-      for (const file of files) {
-        if (file.size > 10 * 1024 * 1024) {
-          toast.error(`${file.name} är för stor (max 10MB)`);
-          continue;
-        }
-
-        const url = await uploadEventImage(file);
+      for (let i = 0; i < validFiles.length; i++) {
+        const file = validFiles[i];
+        setUploadProgress(Math.round((i / validFiles.length) * 50));
+        
+        // Compress the image
+        const compressed = await compressImage(file);
+        setUploadProgress(Math.round(((i + 0.5) / validFiles.length) * 100));
+        
+        // Upload
+        const url = await uploadEventImage(compressed);
         await createImage.mutateAsync({
           household_code: householdCode,
           event_id: eventId,
           url,
         });
+        uploaded++;
+        setUploadProgress(Math.round(((i + 1) / validFiles.length) * 100));
       }
-      toast.success(`${files.length} bild(er) uppladdad(e)!`);
+      if (uploaded > 0) {
+        toast.success(`${uploaded} bild(er) uppladdad(e)!`);
+      }
     } catch (error) {
       toast.error("Kunde inte ladda upp bilderna");
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     }
   };
 
-  const handleUpdateCaption = async (id: string) => {
-    try {
-      await updateImage.mutateAsync({ id, updates: { caption: captionValue || null } });
-      toast.success("Bildtext uppdaterad");
-      setEditingCaption(null);
-    } catch (error) {
-      toast.error("Kunde inte uppdatera bildtexten");
-    }
+  const handleImageClick = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
   };
 
   const handleDelete = async () => {
@@ -94,11 +121,17 @@ const EventImageGallery = ({ eventId, householdCode }: EventImageGalleryProps) =
       await deleteImage.mutateAsync(deletingImage.id);
       toast.success("Bild borttagen");
       setDeletingImage(null);
-      setLightboxImage(null);
+      setLightboxOpen(false);
     } catch (error) {
       toast.error("Kunde inte ta bort bilden");
     }
   };
+
+  const lightboxImages = images.map(img => ({
+    url: img.url,
+    alt: img.caption || "Händelsebild",
+    caption: img.caption || undefined,
+  }));
 
   if (isLoading) {
     return (
@@ -138,12 +171,22 @@ const EventImageGallery = ({ eventId, householdCode }: EventImageGalleryProps) =
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           multiple
           onChange={handleFileSelect}
           className="hidden"
         />
       </div>
+
+      {/* Upload progress */}
+      {isUploading && (
+        <div className="space-y-2">
+          <Progress value={uploadProgress} className="h-2" />
+          <p className="text-xs text-muted-foreground text-center">
+            Komprimerar och laddar upp... {uploadProgress}%
+          </p>
+        </div>
+      )}
 
       {/* Gallery grid */}
       {images.length === 0 ? (
@@ -153,120 +196,52 @@ const EventImageGallery = ({ eventId, householdCode }: EventImageGalleryProps) =
         >
           <Upload className="w-10 h-10 mx-auto text-muted-foreground/40 mb-2" />
           <p className="text-muted-foreground">Klicka för att ladda upp bilder</p>
-          <p className="text-xs text-muted-foreground mt-1">Max 10MB per bild</p>
+          <p className="text-xs text-muted-foreground mt-1">Max 5MB per bild • JPG, PNG, WebP</p>
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-2">
-          {images.map((image) => (
+          {images.map((image, index) => (
             <button
               key={image.id}
-              onClick={() => setLightboxImage(image)}
+              onClick={() => handleImageClick(index)}
               className="group relative aspect-square rounded-lg overflow-hidden bg-muted"
             >
-              <img
+              <LazyImage
                 src={image.url}
-                alt={image.caption || "Event image"}
-                loading="lazy"
-                decoding="async"
-                width={200}
-                height={200}
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                alt={image.caption || "Händelsebild"}
+                aspectRatio="square"
+                className="transition-transform group-hover:scale-105"
               />
               {image.caption && (
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2">
                   <p className="text-xs text-white truncate">{image.caption}</p>
                 </div>
               )}
+              {/* Delete button on hover */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeletingImage(image);
+                }}
+                className="absolute top-1 right-1 p-1.5 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                aria-label="Ta bort bild"
+              >
+                <Trash2 className="w-3 h-3" />
+              </button>
             </button>
           ))}
         </div>
       )}
 
       {/* Lightbox */}
-      <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
-        <DialogContent className="sm:max-w-3xl p-0 overflow-hidden bg-black/95">
-          {lightboxImage && (
-            <div className="relative">
-              <img
-                src={lightboxImage.url}
-                alt={lightboxImage.caption || ""}
-                loading="eager"
-                decoding="async"
-                className="w-full max-h-[80vh] object-contain"
-              />
-
-              {/* Close button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 text-white hover:bg-white/20"
-                onClick={() => setLightboxImage(null)}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-
-              {/* Caption and actions */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                {editingCaption === lightboxImage.id ? (
-                  <div className="flex gap-2">
-                    <Input
-                      value={captionValue}
-                      onChange={(e) => setCaptionValue(e.target.value)}
-                      placeholder="Lägg till bildtext..."
-                      className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50"
-                      autoFocus
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() => handleUpdateCaption(lightboxImage.id)}
-                    >
-                      Spara
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setEditingCaption(null)}
-                    >
-                      Avbryt
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <p className="text-white">
-                      {lightboxImage.caption || (
-                        <span className="text-white/50 italic">Ingen bildtext</span>
-                      )}
-                    </p>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:bg-white/20"
-                        onClick={() => {
-                          setEditingCaption(lightboxImage.id);
-                          setCaptionValue(lightboxImage.caption || "");
-                        }}
-                      >
-                        <Edit2 className="w-4 h-4 mr-1" />
-                        Redigera
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-destructive hover:bg-destructive/20"
-                        onClick={() => setDeletingImage(lightboxImage)}
-                      >
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        Ta bort
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <Lightbox
+        images={lightboxImages}
+        initialIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        showDownload
+        showShare
+      />
 
       {/* Delete confirmation */}
       <AlertDialog open={!!deletingImage} onOpenChange={() => setDeletingImage(null)}>
@@ -274,7 +249,7 @@ const EventImageGallery = ({ eventId, householdCode }: EventImageGalleryProps) =
           <AlertDialogHeader>
             <AlertDialogTitle>Ta bort bild?</AlertDialogTitle>
             <AlertDialogDescription>
-              Är du säker på att du vill ta bort denna bild?
+              Är du säker på att du vill ta bort denna bild? Detta kan inte ångras.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

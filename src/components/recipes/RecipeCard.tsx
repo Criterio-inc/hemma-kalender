@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Clock, Users, UtensilsCrossed } from "lucide-react";
 import { Recipe } from "@/hooks/useRecipes";
+import { LazyImage } from "@/components/ui/lazy-image";
 import { cn } from "@/lib/utils";
 
 interface RecipeCardProps {
@@ -32,16 +33,14 @@ const RecipeCard = memo(function RecipeCard({ recipe, onClick }: RecipeCardProps
       )}
     >
       {/* Image */}
-      <div className="aspect-[4/3] bg-muted overflow-hidden">
+      <div className="aspect-square bg-muted overflow-hidden">
         {recipe.image_url ? (
-          <img
+          <LazyImage
             src={recipe.image_url}
             alt={recipe.title}
-            loading="lazy"
-            decoding="async"
-            width={400}
-            height={300}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            aspectRatio="square"
+            className="transition-transform duration-300 group-hover:scale-105"
+            fallbackSrc="/placeholder.svg"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
