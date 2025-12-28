@@ -44,6 +44,7 @@ import TodayTodosWidget from "@/components/todos/TodayTodosWidget";
 import QuickAccessWidgets from "@/components/widgets/QuickAccessWidgets";
 import { CalendarGridSkeleton } from "@/components/ui/skeleton-loaders";
 import { ErrorState } from "@/components/ui/error-state";
+import { CalendarErrorFallback } from "@/components/errors";
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -70,19 +71,20 @@ const Calendar = () => {
     data: monthEvents = [],
     isLoading: monthLoading,
     error: monthError,
+    refetch: refetchMonth,
   } = useEvents(session?.householdCode || "", currentDate);
 
-  const { data: weekEvents = [], isLoading: weekLoading } = useEventsForWeek(
+  const { data: weekEvents = [], isLoading: weekLoading, error: weekError, refetch: refetchWeek } = useEventsForWeek(
     session?.householdCode || "",
     currentDate
   );
 
-  const { data: dayEvents = [], isLoading: dayLoading } = useEventsForDate(
+  const { data: dayEvents = [], isLoading: dayLoading, error: dayError, refetch: refetchDay } = useEventsForDate(
     session?.householdCode || "",
     currentDate
   );
 
-  const { data: yearEvents = [], isLoading: yearLoading } = useEventsForYear(
+  const { data: yearEvents = [], isLoading: yearLoading, error: yearError, refetch: refetchYear } = useEventsForYear(
     session?.householdCode || "",
     currentDate.getFullYear()
   );
@@ -218,7 +220,28 @@ const Calendar = () => {
     (currentView === "day" && dayLoading) ||
     (currentView === "year" && yearLoading);
 
-  const error = currentView === "month" && monthError;
+  const error = 
+    (currentView === "month" && monthError) ||
+    (currentView === "week" && weekError) ||
+    (currentView === "day" && dayError) ||
+    (currentView === "year" && yearError);
+
+  const handleRetry = () => {
+    switch (currentView) {
+      case "month":
+        refetchMonth();
+        break;
+      case "week":
+        refetchWeek();
+        break;
+      case "day":
+        refetchDay();
+        break;
+      case "year":
+        refetchYear();
+        break;
+    }
+  };
 
   if (!session) {
     return null;
@@ -267,11 +290,7 @@ const Calendar = () => {
         {isLoading ? (
           <CalendarGridSkeleton />
         ) : error ? (
-          <ErrorState
-            type="server"
-            title="Kunde inte hämta händelser"
-            onRetry={() => window.location.reload()}
-          />
+          <CalendarErrorFallback onRetry={handleRetry} />
         ) : (
           <AnimatePresence mode="wait">
             <motion.div

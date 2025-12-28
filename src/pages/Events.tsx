@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format, parseISO, isSameMonth } from "date-fns";
 import { sv } from "date-fns/locale";
-import { Search, Filter, Star, Calendar, Loader2 } from "lucide-react";
+import { Search, Filter, Star, Calendar, Loader2, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,7 @@ import { useEventsForYear, Event } from "@/hooks/useEvents";
 import EventDetailModal from "@/components/calendar/EventDetailModal";
 import { EventListSkeleton } from "@/components/ui/skeleton-loaders";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CalendarErrorFallback } from "@/components/errors";
 
 const eventCategories = [
   { value: "all", label: "Alla kategorier" },
@@ -50,10 +51,14 @@ const Events = () => {
   }, [navigate]);
 
   const currentYear = new Date().getFullYear();
-  const { data: events = [], isLoading } = useEventsForYear(
+  const { data: events = [], isLoading, error, refetch } = useEventsForYear(
     session?.householdCode || "",
     currentYear
   );
+
+  const handleRetry = () => {
+    refetch();
+  };
 
   // Filter and search events
   const filteredEvents = useMemo(() => {
@@ -166,6 +171,11 @@ const Events = () => {
         {/* Events List */}
         {isLoading ? (
           <EventListSkeleton count={5} />
+        ) : error ? (
+          <CalendarErrorFallback 
+            message="Kunde inte ladda händelser" 
+            onRetry={handleRetry}
+          />
         ) : filteredEvents.length === 0 ? (
           <EmptyState type="events" />
         ) : (
