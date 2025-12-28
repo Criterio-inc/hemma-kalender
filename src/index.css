@@ -594,6 +594,57 @@
   .animate-pulse-soft {
     animation: pulse-soft 3s ease-in-out infinite;
   }
+
+  /* Screen reader only - visually hidden but accessible */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Screen reader only but visible on focus */
+  .sr-only-focusable:focus,
+  .sr-only-focusable:focus-within {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Touch-friendly interaction */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Ensure minimum touch target size (44x44px) */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Focus visible ring for keyboard navigation */
+  .focus-visible-ring:focus-visible {
+    @apply ring-2 ring-primary ring-offset-2 ring-offset-background outline-none;
+  }
+
+  /* Skip link styles */
+  .skip-link {
+    @apply sr-only sr-only-focusable fixed top-4 left-4 z-[100] bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium shadow-lg;
+  }
+
+  .skip-link:focus {
+    @apply not-sr-only;
+  }
 }
 
 @keyframes float {

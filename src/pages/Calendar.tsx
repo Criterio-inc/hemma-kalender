@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -66,6 +66,107 @@ const Calendar = () => {
     setSession(currentSession);
   }, [navigate]);
 
+  // Navigation functions with useCallback for keyboard shortcuts
+  const navigatePrevious = useCallback(() => {
+    switch (currentView) {
+      case "day":
+        setCurrentDate((prev) => subDays(prev, 1));
+        break;
+      case "week":
+        setCurrentDate((prev) => subWeeks(prev, 1));
+        break;
+      case "month":
+        setCurrentDate((prev) => subMonths(prev, 1));
+        break;
+      case "year":
+        setCurrentDate((prev) => subYears(prev, 1));
+        break;
+    }
+  }, [currentView]);
+
+  const navigateNext = useCallback(() => {
+    switch (currentView) {
+      case "day":
+        setCurrentDate((prev) => addDays(prev, 1));
+        break;
+      case "week":
+        setCurrentDate((prev) => addWeeks(prev, 1));
+        break;
+      case "month":
+        setCurrentDate((prev) => addMonths(prev, 1));
+        break;
+      case "year":
+        setCurrentDate((prev) => addYears(prev, 1));
+        break;
+    }
+  }, [currentView]);
+
+  const goToToday = useCallback(() => setCurrentDate(new Date()), []);
+
+  const handleAddEventFromHeader = useCallback(() => {
+    setAddEventDate(new Date());
+    setAddEventHour(null);
+    setIsAddEventOpen(true);
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts when typing in inputs
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+
+      // Escape: Close modals
+      if (e.key === "Escape") {
+        if (selectedEvent) {
+          setSelectedEvent(null);
+          e.preventDefault();
+        } else if (isAddEventOpen) {
+          setIsAddEventOpen(false);
+          e.preventDefault();
+        } else if (selectedDate) {
+          setSelectedDate(null);
+          e.preventDefault();
+        }
+        return;
+      }
+
+      // Ctrl/Cmd + Arrow Left/Right: Navigate periods
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === "ArrowLeft") {
+          navigatePrevious();
+          e.preventDefault();
+        } else if (e.key === "ArrowRight") {
+          navigateNext();
+          e.preventDefault();
+        } else if (e.key === "t" || e.key === "T") {
+          goToToday();
+          e.preventDefault();
+        } else if (e.key === "n" || e.key === "N") {
+          handleAddEventFromHeader();
+          e.preventDefault();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    currentView,
+    selectedEvent,
+    isAddEventOpen,
+    selectedDate,
+    navigatePrevious,
+    navigateNext,
+    goToToday,
+    handleAddEventFromHeader,
+  ]);
+
   // Fetch events based on current view
   const {
     data: monthEvents = [],
@@ -93,43 +194,6 @@ const Calendar = () => {
     session?.householdCode || "",
     selectedDate || new Date()
   );
-
-  // Navigation functions
-  const navigatePrevious = () => {
-    switch (currentView) {
-      case "day":
-        setCurrentDate(subDays(currentDate, 1));
-        break;
-      case "week":
-        setCurrentDate(subWeeks(currentDate, 1));
-        break;
-      case "month":
-        setCurrentDate(subMonths(currentDate, 1));
-        break;
-      case "year":
-        setCurrentDate(subYears(currentDate, 1));
-        break;
-    }
-  };
-
-  const navigateNext = () => {
-    switch (currentView) {
-      case "day":
-        setCurrentDate(addDays(currentDate, 1));
-        break;
-      case "week":
-        setCurrentDate(addWeeks(currentDate, 1));
-        break;
-      case "month":
-        setCurrentDate(addMonths(currentDate, 1));
-        break;
-      case "year":
-        setCurrentDate(addYears(currentDate, 1));
-        break;
-    }
-  };
-
-  const goToToday = () => setCurrentDate(new Date());
 
   // Get appropriate title based on view
   const getViewTitle = () => {
@@ -165,6 +229,22 @@ const Calendar = () => {
     }
   };
 
+  // Get navigation aria-labels based on view
+  const getNavAriaLabels = () => {
+    switch (currentView) {
+      case "day":
+        return { prev: "Föregående dag", next: "Nästa dag" };
+      case "week":
+        return { prev: "Föregående vecka", next: "Nästa vecka" };
+      case "month":
+        return { prev: "Föregående månad", next: "Nästa månad" };
+      case "year":
+        return { prev: "Föregående år", next: "Nästa år" };
+    }
+  };
+
+  const navLabels = getNavAriaLabels();
+
   const handleDayClick = (date: Date) => {
     setSelectedDate(date);
   };
@@ -177,12 +257,6 @@ const Calendar = () => {
     }
     setAddEventHour(null);
     setSelectedDate(null);
-    setIsAddEventOpen(true);
-  };
-
-  const handleAddEventFromHeader = () => {
-    setAddEventDate(new Date());
-    setAddEventHour(null);
     setIsAddEventOpen(true);
   };
 
@@ -264,25 +338,38 @@ const Calendar = () => {
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" size="icon" onClick={navigatePrevious}>
-            <ChevronLeft className="w-5 h-5" />
+        <div className="flex items-center justify-between mb-6" role="navigation" aria-label="Kalendernavigering">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={navigatePrevious}
+            aria-label={navLabels.prev}
+            className="touch-target focus-visible-ring"
+          >
+            <ChevronLeft className="w-5 h-5" aria-hidden="true" />
           </Button>
 
           <div className="text-center">
-            <h2 className="text-xl md:text-2xl font-display font-bold capitalize text-foreground">
+            <h1 className="text-xl md:text-2xl font-display font-bold capitalize text-foreground">
               {getViewTitle()}
-            </h2>
+            </h1>
             <button
               onClick={goToToday}
-              className="text-sm text-primary font-medium hover:underline mt-1"
+              className="text-sm text-primary font-medium hover:underline mt-1 focus-visible-ring rounded px-2 py-1"
+              aria-label={`Gå till ${getTodayButtonText().toLowerCase()}`}
             >
               {getTodayButtonText()}
             </button>
           </div>
 
-          <Button variant="ghost" size="icon" onClick={navigateNext}>
-            <ChevronRight className="w-5 h-5" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={navigateNext}
+            aria-label={navLabels.next}
+            className="touch-target focus-visible-ring"
+          >
+            <ChevronRight className="w-5 h-5" aria-hidden="true" />
           </Button>
         </div>
 
