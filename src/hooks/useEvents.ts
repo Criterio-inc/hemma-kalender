@@ -60,6 +60,24 @@ type EventUpdate = {
 
 export type { Event, EventInsert, EventUpdate };
 
+// Fetch all events for a household (for search)
+export const useAllEvents = (householdCode: string) => {
+  return useQuery({
+    queryKey: ["events", householdCode, "all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("household_code", householdCode)
+        .order("start_date", { ascending: false });
+
+      if (error) throw error;
+      return data as Event[];
+    },
+    enabled: !!householdCode,
+  });
+};
+
 export const useEvents = (householdCode: string, currentDate: Date) => {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);

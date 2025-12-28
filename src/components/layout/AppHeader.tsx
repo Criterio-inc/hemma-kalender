@@ -11,6 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { HouseholdSession, logout } from "@/lib/auth";
 import { useNotifications, useUnreadNotificationCount, useMarkNotificationRead } from "@/hooks/useNotifications";
 import { useSeasonalTheme, getSeasonName } from "@/contexts/SeasonalThemeContext";
+import { GlobalSearch } from "@/components/search/GlobalSearch";
+import { useAllEvents } from "@/hooks/useEvents";
+import { useRecipes } from "@/hooks/useRecipes";
+import { useTodos } from "@/hooks/useTodos";
+import { useNotes } from "@/hooks/useNotes";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -26,6 +31,12 @@ const AppHeader = ({ session, onAddEvent }: AppHeaderProps) => {
   const { data: notifications = [] } = useNotifications(session.householdCode);
   const { data: unreadCount = 0 } = useUnreadNotificationCount(session.householdCode);
   const markRead = useMarkNotificationRead();
+
+  // Fetch data for global search
+  const { data: events = [] } = useAllEvents(session.householdCode);
+  const { data: recipes = [] } = useRecipes(session.householdCode);
+  const { data: todos = [] } = useTodos(session.householdCode);
+  const { data: notes = [] } = useNotes(session.householdCode, undefined);
 
   const handleLogout = () => {
     logout();
@@ -75,6 +86,15 @@ const AppHeader = ({ session, onAddEvent }: AppHeaderProps) => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            {/* Global Search */}
+            <GlobalSearch
+              householdCode={session.householdCode}
+              events={events}
+              recipes={recipes}
+              todos={todos}
+              notes={notes}
+            />
+
             {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

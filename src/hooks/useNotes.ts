@@ -30,7 +30,7 @@ export type NoteUpdate = {
   tags?: string[] | null;
 };
 
-export const useNotes = (householdCode: string, eventId?: string) => {
+export const useNotes = (householdCode: string, eventId: string | null | undefined = undefined) => {
   return useQuery({
     queryKey: ["notes", householdCode, eventId],
     queryFn: async () => {
