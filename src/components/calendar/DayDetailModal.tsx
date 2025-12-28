@@ -87,33 +87,34 @@ const DayDetailModal = ({
                   <button
                     key={event.id}
                     onClick={() => onEventClick(event)}
-                    className="w-full text-left p-3 rounded-xl border border-border hover:bg-muted/50 transition-colors group"
+                    className="w-full text-left p-4 rounded-xl border-l-4 bg-card shadow-sm hover:shadow-md transition-all group"
+                    style={{ borderLeftColor: eventColor }}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm"
                         style={{ backgroundColor: eventColor }}
                       />
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                        <h4 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
                           {event.title}
                         </h4>
-                        <div className="flex items-center gap-2 mt-0.5 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 mt-1 text-sm text-foreground/70">
                           {!event.all_day ? (
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1 font-medium">
                               <Clock className="w-3.5 h-3.5" />
                               {format(new Date(event.start_date), "HH:mm")}
                             </span>
                           ) : (
-                            <span>Heldag</span>
+                            <span className="font-medium">Heldag</span>
                           )}
-                          <span className="text-muted-foreground/50">•</span>
-                          <span>
+                          <span className="text-foreground/40">•</span>
+                          <span className="font-medium">
                             {eventCategoryLabels[event.event_category || "custom"]}
                           </span>
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <ChevronRight className="w-5 h-5 text-foreground/50 group-hover:text-primary transition-colors" />
                     </div>
                   </button>
                 );

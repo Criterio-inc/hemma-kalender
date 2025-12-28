@@ -126,6 +126,23 @@ const Events = () => {
     }
   };
 
+  const getCategoryBorderColor = (category: string | null) => {
+    switch (category) {
+      case "birthday": return "#ec4899";
+      case "holiday": return "#8b5cf6";
+      case "christmas": return "#ef4444";
+      case "easter": return "#eab308";
+      case "midsummer": return "#22c55e";
+      case "new_year": return "#3b82f6";
+      case "graduation": return "#6366f1";
+      case "anniversary": return "#f43f5e";
+      case "school": return "#3b82f6";
+      case "activity": return "#22c55e";
+      case "appointment": return "#f97316";
+      default: return "hsl(188, 75%, 40%)";
+    }
+  };
+
   if (!session) return null;
 
   return (
@@ -218,7 +235,8 @@ const Events = () => {
                       whileHover={{ y: -2, transition: { duration: 0.2 } }}
                     >
                       <Card
-                        className="cursor-pointer hover:shadow-md transition-shadow"
+                        className="cursor-pointer hover:shadow-lg transition-all border-l-4 bg-card"
+                        style={{ borderLeftColor: getCategoryBorderColor(event.event_category) }}
                         onClick={() => setSelectedEvent(event)}
                       >
                         <CardContent className="p-4">
@@ -228,11 +246,11 @@ const Events = () => {
                                 {event.event_type === "major" && (
                                   <Star className="w-4 h-4 text-warning fill-warning" />
                                 )}
-                                <h3 className="font-semibold text-foreground truncate">
+                                <h3 className="font-bold text-lg text-foreground truncate">
                                   {event.title}
                                 </h3>
                               </div>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-foreground/70">
                                 {format(parseISO(event.start_date), "EEEE d MMMM", {
                                   locale: sv,
                                 })}
@@ -245,7 +263,7 @@ const Events = () => {
                                 )}
                               </p>
                               {event.description && (
-                                <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
+                                <p className="text-sm text-foreground/60 mt-1 line-clamp-1">
                                   {event.description}
                                 </p>
                               )}
