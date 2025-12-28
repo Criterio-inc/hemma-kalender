@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { PushNotificationSettings } from "@/components/notifications/PushNotificationSettings";
+import NotificationSettingsSection from "@/components/notifications/NotificationSettingsSection";
 
 const Settings = () => {
   const session = getSession();
@@ -177,35 +178,13 @@ const Settings = () => {
 
           {/* Notification Settings */}
           <TabsContent value="notifications" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Aviseringar</CardTitle>
-                <CardDescription>Hantera dina aviseringsinställningar</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {isLoading ? (
-                  <div className="animate-pulse space-y-4">
-                    <div className="h-10 bg-muted rounded" />
-                    <div className="h-10 bg-muted rounded" />
-                  </div>
-                ) : preferences && (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label>Aktivera aviseringar</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Ta emot påminnelser för händelser och uppgifter
-                        </p>
-                      </div>
-                      <Switch
-                        checked={preferences.notifications_enabled}
-                        onCheckedChange={(v) => handlePreferenceChange("notifications_enabled", v)}
-                      />
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+            {preferences && (
+              <NotificationSettingsSection
+                preferences={preferences}
+                onPreferenceChange={handlePreferenceChange}
+                isLoading={isLoading}
+              />
+            )}
             
             <PushNotificationSettings householdCode={session.householdCode} />
           </TabsContent>

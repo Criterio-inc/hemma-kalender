@@ -2,9 +2,27 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 
+export interface QuietHours {
+  enabled: boolean;
+  start: string; // "22:00"
+  end: string;   // "07:00"
+}
+
+export interface CategoryNotificationSettings {
+  birthday: boolean;
+  christmas: boolean;
+  easter: boolean;
+  midsummer: boolean;
+  wedding: boolean;
+  custom: boolean;
+}
+
 export interface Preferences {
   notifications_enabled: boolean;
+  notification_sound: boolean;
   default_reminder_times: number[];
+  quiet_hours: QuietHours;
+  category_notifications: CategoryNotificationSettings;
   theme_auto: boolean;
   dark_mode: 'auto' | 'light' | 'dark';
   calendar_view: 'month' | 'week' | 'day';
@@ -14,11 +32,23 @@ export interface Preferences {
   default_event_duration: number;
   default_event_color: string | null;
   ai_enabled: boolean;
+  weekly_summary: boolean;
+  todo_overdue_notifications: boolean;
 }
 
 const defaultPreferences: Preferences = {
   notifications_enabled: true,
+  notification_sound: true,
   default_reminder_times: [1440, 60],
+  quiet_hours: { enabled: false, start: '22:00', end: '07:00' },
+  category_notifications: {
+    birthday: true,
+    christmas: true,
+    easter: true,
+    midsummer: true,
+    wedding: true,
+    custom: true,
+  },
   theme_auto: true,
   dark_mode: 'auto',
   calendar_view: 'month',
@@ -28,6 +58,8 @@ const defaultPreferences: Preferences = {
   default_event_duration: 60,
   default_event_color: null,
   ai_enabled: true,
+  weekly_summary: true,
+  todo_overdue_notifications: true,
 };
 
 const toJson = (obj: unknown): Json => JSON.parse(JSON.stringify(obj));
