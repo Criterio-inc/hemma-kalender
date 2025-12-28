@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format, parseISO, isSameMonth } from "date-fns";
 import { sv } from "date-fns/locale";
-import { Search, Filter, Star, Calendar, Loader2, RefreshCw } from "lucide-react";
+import { Search, Star, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -235,22 +236,22 @@ const Events = () => {
                       whileHover={{ y: -2, transition: { duration: 0.2 } }}
                     >
                       <Card
-                        className="cursor-pointer hover:shadow-lg transition-all border-l-4 bg-card"
+                        className="cursor-pointer hover:shadow-lg active:scale-[0.99] transition-all border-l-4 bg-card shadow-sm"
                         style={{ borderLeftColor: getCategoryBorderColor(event.event_category) }}
                         onClick={() => setSelectedEvent(event)}
                       >
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between gap-4">
+                        <CardContent className="p-4 sm:p-5">
+                          <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center gap-2 mb-2">
                                 {event.event_type === "major" && (
-                                  <Star className="w-4 h-4 text-warning fill-warning" />
+                                  <Star className="w-5 h-5 text-warning fill-warning flex-shrink-0" />
                                 )}
-                                <h3 className="font-bold text-lg text-foreground truncate">
+                                <h3 className="font-bold text-base sm:text-lg text-foreground leading-tight">
                                   {event.title}
                                 </h3>
                               </div>
-                              <p className="text-sm text-foreground/70">
+                              <p className="text-sm font-medium text-foreground/80">
                                 {format(parseISO(event.start_date), "EEEE d MMMM", {
                                   locale: sv,
                                 })}
@@ -263,15 +264,15 @@ const Events = () => {
                                 )}
                               </p>
                               {event.description && (
-                                <p className="text-sm text-foreground/60 mt-1 line-clamp-1">
+                                <p className="text-sm text-foreground/70 mt-2 line-clamp-2">
                                   {event.description}
                                 </p>
                               )}
                             </div>
 
-                            <div className="flex flex-col items-end gap-2">
+                            <div className="flex flex-col items-end gap-2 flex-shrink-0">
                               <Badge
-                                className={getCategoryColor(event.event_category)}
+                                className={cn("text-xs font-medium", getCategoryColor(event.event_category))}
                               >
                                 {eventCategories.find(
                                   (c) => c.value === event.event_category
