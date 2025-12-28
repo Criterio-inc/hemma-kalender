@@ -23,3 +23,15 @@ verify_jwt = false
 
 [functions.get-vapid-key]
 verify_jwt = false
+
+[functions.ai-recipe-recommendations]
+verify_jwt = false
+
+[functions.ai-meal-plan-generator]
+verify_jwt = false
+
+[functions.ai-todo-suggestions]
+verify_jwt = false
+
+[functions.ai-natural-language-parse]
+verify_jwt = false
