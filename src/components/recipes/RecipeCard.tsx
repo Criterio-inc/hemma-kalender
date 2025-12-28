@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Clock, Users, UtensilsCrossed } from "lucide-react";
 import { Recipe } from "@/hooks/useRecipes";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,7 @@ const categoryLabels: Record<string, string> = {
   snack: "Mellanmål",
 };
 
-const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
+const RecipeCard = memo(function RecipeCard({ recipe, onClick }: RecipeCardProps) {
   const totalTime = (recipe.prep_time || 0) + (recipe.cook_time || 0);
   const displayTags = recipe.tags?.slice(0, 3) || [];
 
@@ -36,6 +37,10 @@ const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
           <img
             src={recipe.image_url}
             alt={recipe.title}
+            loading="lazy"
+            decoding="async"
+            width={400}
+            height={300}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
@@ -96,6 +101,6 @@ const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
       </div>
     </button>
   );
-};
+});
 
 export default RecipeCard;

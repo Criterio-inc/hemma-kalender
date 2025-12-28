@@ -166,6 +166,10 @@ const EventImageGallery = ({ eventId, householdCode }: EventImageGalleryProps) =
               <img
                 src={image.url}
                 alt={image.caption || "Event image"}
+                loading="lazy"
+                decoding="async"
+                width={200}
+                height={200}
                 className="w-full h-full object-cover transition-transform group-hover:scale-105"
               />
               {image.caption && (
@@ -186,6 +190,8 @@ const EventImageGallery = ({ eventId, householdCode }: EventImageGalleryProps) =
               <img
                 src={lightboxImage.url}
                 alt={lightboxImage.caption || ""}
+                loading="eager"
+                decoding="async"
                 className="w-full max-h-[80vh] object-contain"
               />
 
