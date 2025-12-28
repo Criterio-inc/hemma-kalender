@@ -56,10 +56,10 @@ const DayDetailModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl capitalize">
-            <CalendarIcon className="w-5 h-5 text-primary" />
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl capitalize">
+            <CalendarIcon className="w-5 h-5 text-primary flex-shrink-0" />
             {formattedDate}
           </DialogTitle>
         </DialogHeader>

@@ -230,24 +230,24 @@ const EventDetailModal = ({ isOpen, onClose, event }: EventDetailModalProps) => 
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
         <DialogContent className={cn(
-          "max-h-[90vh] overflow-y-auto relative",
-          isMajorEvent ? "sm:max-w-2xl" : "sm:max-w-md"
+          "relative",
+          isMajorEvent ? "max-w-2xl" : "max-w-md"
         )}>
           {/* Event theme decorations */}
           {showEventDecorations && (
             <EventDecorations category={eventCategory} className="opacity-30" />
           )}
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
+            <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
               {isMajorEvent ? (
-                <Sparkles className="w-5 h-5 text-accent" />
+                <Sparkles className="w-5 h-5 text-accent flex-shrink-0" />
               ) : (
                 <div
-                  className="w-4 h-4 rounded-full"
+                  className="w-4 h-4 rounded-full flex-shrink-0"
                   style={{ backgroundColor: eventColor }}
                 />
               )}
-              {isEditing ? "Redigera händelse" : event.title}
+              <span className="truncate">{isEditing ? "Redigera händelse" : event.title}</span>
             </DialogTitle>
           </DialogHeader>
 
